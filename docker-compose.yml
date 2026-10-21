@@ -1,0 +1,118 @@
+version: "3.8"
+
+services:
+  # 1. Multi-Tenant PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: cloudguard_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: cloudguard
+      POSTGRES_USER: cloudguard_user
+      POSTGRES_PASSWORD: cloudguard_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cloudguard_user -d cloudguard"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis Message Broker & Cache
+  redis:
+    image: redis:7-alpine
+    container_name: cloudguard_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 3. FastAPI Web Server & API Gateway
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cloudguard_api
+    restart: always
+    command: uvicorn src.ui.dashboard_api:app --host 0.0.0.0 --port 8000 --workers 4
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://cloudguard_user:cloudguard_password@postgres:5432/cloudguard
+      - SYNC_DATABASE_URL=postgresql://cloudguard_user:cloudguard_password@postgres:5432/cloudguard
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - JWT_SECRET_KEY=production-cloudguard-jwt-secret-key-2026
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # 4. Celery Distributed Background Worker
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cloudguard_worker
+    restart: always
+    command: celery -A src.jobs.celery_app worker --loglevel=info --concurrency=4
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://cloudguard_user:cloudguard_password@postgres:5432/cloudguard
+      - SYNC_DATABASE_URL=postgresql://cloudguard_user:cloudguard_password@postgres:5432/cloudguard
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # 5. Celery Beat Scheduler (Nightly Automated Scans)
+  beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cloudguard_beat
+    restart: always
+    command: celery -A src.jobs.celery_app beat --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://cloudguard_user:cloudguard_password@postgres:5432/cloudguard
+      - SYNC_DATABASE_URL=postgresql://cloudguard_user:cloudguard_password@postgres:5432/cloudguard
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # 6. Flower Dashboard (Celery Real-Time Monitoring UI)
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cloudguard_flower
+    restart: always
+    command: celery -A src.jobs.celery_app flower --port=5555 --basic_auth=admin:cloudguard_secret
+    ports:
+      - "5555:5555"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

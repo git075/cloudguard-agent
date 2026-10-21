@@ -1,0 +1,87 @@
+name: CloudGuard FinOps CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master, "feature/**" ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test-and-lint:
+    name: Run Unit & Integration Test Suite
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: cloudguard_test
+          POSTGRES_USER: cloudguard_user
+          POSTGRES_PASSWORD: cloudguard_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install celery redis flower asyncpg email-validator greenlet bcrypt passlib PyJWT cryptography requests pytest pytest-asyncio pytest-cov
+
+      - name: Run Alembic Database Migration
+        env:
+          SYNC_DATABASE_URL: postgresql://cloudguard_user:cloudguard_password@localhost:5432/cloudguard_test
+        run: |
+          python -m alembic upgrade head
+
+      - name: Execute Pytest Suite with Coverage
+        env:
+          PYTHONPATH: .
+          TESTING: "1"
+          DATABASE_URL: sqlite+aiosqlite:///:memory:
+        run: |
+          python -m pytest tests/ -v --cov=src --cov-report=term-missing
+
+  docker-build:
+    name: Build Production Docker Image
+    needs: test-and-lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: false
+          tags: cloudguard-finops:latest
