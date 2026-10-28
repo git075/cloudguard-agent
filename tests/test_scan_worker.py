@@ -5,7 +5,7 @@ import pytest
 import pytest_asyncio
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
@@ -216,3 +216,59 @@ async def test_fastapi_scan_tenant_isolation(async_test_session: AsyncSession):
     assert res.status_code == 404
 
     app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_fastapi_scan_trigger_celery_broker_down_returns_503(
+    async_test_session: AsyncSession, monkeypatch
+):
+    """Verifies that if Celery broker is unavailable, endpoint returns HTTP 503 and marks scan job as failed."""
+    customer = Customer(
+        name="Broker Fail Tenant",
+        email="broker_fail@corp.com",
+        password_hash="hashed_pw",
+        external_id=generate_external_id(),
+    )
+    async_test_session.add(customer)
+    await async_test_session.commit()
+
+    aws_acc = AWSAccount(
+        customer_id=customer.id,
+        account_id="333344445555",
+        role_arn="arn:aws:iam::333344445555:role/FailRole",
+    )
+    async_test_session.add(aws_acc)
+    await async_test_session.commit()
+
+    def mock_fail_delay(**kwargs):
+        raise ConnectionError("Redis broker connection refused")
+
+    monkeypatch.setattr(execute_cloudguard_scan, "delay", mock_fail_delay)
+
+    async def override_get_db():
+        yield async_test_session
+
+    app.dependency_overrides[get_async_db] = override_get_db
+    client = TestClient(app)
+
+    token = create_access_token(customer_id=customer.id, email=customer.email)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    res = client.post(
+        "/api/v1/scans/trigger",
+        json={"aws_account_id": aws_acc.id},
+        headers=headers,
+    )
+    assert res.status_code == 503
+    assert "Background task queue service is currently unavailable" in res.json()["detail"]
+
+    # Verify ScanJob was saved with status='failed'
+    stmt = select(ScanJob).where(ScanJob.customer_id == customer.id)
+    scan_result = await async_test_session.execute(stmt)
+    job = scan_result.scalars().first()
+    assert job is not None
+    assert job.status == "failed"
+    assert "Redis broker connection refused" in job.error_message
+
+    app.dependency_overrides.clear()
+

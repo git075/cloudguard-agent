@@ -88,6 +88,13 @@
 - [x] Phase 11.12 — Container hardening (non-root appuser UID 10001, Uvicorn 4 workers, Flower basic auth)
 - [x] Phase 11.13 — Comprehensive test suite expanded to 82/82 passing tests (test_production_hardening.py)
 - [x] Phase 11.14 — LEARNING_GUIDE.md Section 16 added documenting all 12 pre-production fixes
-
-
+## Phase 12: Enterprise Production Hardening & Infrastructure Security ✅ COMPLETE
+- [x] Phase 12.1 — Cost Explorer Date Aggregation fix in aws_collector.py (daily bucket aggregation avoiding ValidationException)
+- [x] Phase 12.2 — StateGuard Rules 1 & 2 scoped to proposed/committed mutations (prevents crash on rejected hot resources)
+- [x] Phase 12.3 — Consolidated, uncommented, and pinned all production dependencies in requirements.txt
+- [x] Phase 12.4 — Hardened Celery queue config (task_acks_late=True, task_reject_on_worker_lost=True, soft time limits) and retry status bug fix
+- [x] Phase 12.5 — Removed blocking sync fallback in scan_router.py; returns HTTP 503 if broker unavailable
+- [x] Phase 12.6 — Supported unquoted Terraform variables, locals, and expressions in hcl_parser.py
+- [x] Phase 12.7 — Hardened docker-compose.yml (removed public 0.0.0.0 bindings for DB/Redis, added Redis password)
+- [x] Phase 12.8 — Test suite expanded to 86/86 passing tests (100% green)
 

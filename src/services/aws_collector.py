@@ -613,27 +613,38 @@ class AWSMetricsCollector:
             end = datetime.now(timezone.utc)
             start = end - timedelta(days=30)
 
-            response = ce.get_cost_and_usage(
-                TimePeriod={
-                    "Start": start.strftime("%Y-%m-%d"),
-                    "End": end.strftime("%Y-%m-%d"),
-                },
-                Granularity="MONTHLY",
-                Filter={
-                    "Dimensions": {
-                        "Key": "RESOURCE_ID",
-                        "Values": [resource_id],
-                    }
-                },
-                Metrics=["BlendedCost"],
-            )
-
             total_cost = 0.0
-            for result in response.get("ResultsByTime", []):
-                amount = result.get("Total", {}).get("BlendedCost", {}).get("Amount", "0")
-                total_cost += float(amount)
+            next_token = None
 
-            logger.info("Cost Explorer: Resource '%s' cost $%.2f/mo", resource_id, total_cost)
+            while True:
+                params: Dict[str, Any] = {
+                    "TimePeriod": {
+                        "Start": start.strftime("%Y-%m-%d"),
+                        "End": end.strftime("%Y-%m-%d"),
+                    },
+                    "Granularity": "DAILY",
+                    "Filter": {
+                        "Dimensions": {
+                            "Key": "RESOURCE_ID",
+                            "Values": [resource_id],
+                        }
+                    },
+                    "Metrics": ["BlendedCost"],
+                }
+                if next_token:
+                    params["NextPageToken"] = next_token
+
+                response = ce.get_cost_and_usage(**params)
+
+                for result in response.get("ResultsByTime", []):
+                    amount = result.get("Total", {}).get("BlendedCost", {}).get("Amount", "0")
+                    total_cost += float(amount)
+
+                next_token = response.get("NextPageToken")
+                if not next_token:
+                    break
+
+            logger.info("Cost Explorer: Resource '%s' cost $%.2f/mo (last 30 days daily sum)", resource_id, total_cost)
             return round(total_cost, 2)
 
         except Exception as e:

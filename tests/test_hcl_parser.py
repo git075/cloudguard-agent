@@ -87,6 +87,54 @@ resource "aws_db_instance" "production_db" {
         self.assertEqual(block.current_attributes.get("storage_encrypted"), True)
         self.assertEqual(block.current_attributes.get("tags", {}).get("Environment"), "production")
 
+    def test_mutate_unquoted_variable(self):
+        parser = TerraformHCLParser()
+        content = """resource "aws_instance" "web" {
+  instance_type = var.web_instance_type # variable reference
+  monitoring    = true
+}
+"""
+        result = parser.mutate_instance_spec(
+            file_path="main.tf",
+            content=content,
+            resource_type="aws_instance",
+            resource_name="web",
+            attribute_name="instance_type",
+            new_value="t3.small",
+        )
+        self.assertEqual(result.old_value, "var.web_instance_type")
+        self.assertEqual(result.new_value, "t3.small")
+        self.assertIn('instance_type = "t3.small" # variable reference', result.updated_code)
+
+    def test_mutate_unquoted_ternary(self):
+        parser = TerraformHCLParser()
+        content = """resource "aws_instance" "app" {
+  instance_type = var.env == "prod" ? "m5.xlarge" : "t3.large"
+}
+"""
+        result = parser.mutate_instance_spec(
+            file_path="main.tf",
+            content=content,
+            resource_type="aws_instance",
+            resource_name="app",
+            attribute_name="instance_type",
+            new_value="t3.medium",
+        )
+        self.assertEqual(result.old_value, 'var.env == "prod" ? "m5.xlarge" : "t3.large"')
+        self.assertIn('instance_type = "t3.medium"', result.updated_code)
+
+    def test_regex_fallback_parse_unquoted_variables(self):
+        parser = TerraformHCLParser()
+        unquoted_tf = """resource "aws_instance" "api" {
+  instance_type = var.api_type
+  monitoring    = true
+}
+"""
+        blocks = parser._regex_fallback_parse("main.tf", unquoted_tf)
+        self.assertEqual(len(blocks), 1)
+        self.assertEqual(blocks[0].current_attributes.get("instance_type"), "var.api_type")
+        self.assertEqual(blocks[0].current_attributes.get("monitoring"), True)
+
 
 if __name__ == "__main__":
     unittest.main()

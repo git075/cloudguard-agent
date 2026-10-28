@@ -71,7 +71,10 @@ class TerraformHCLParser:
         target_header_re = re.compile(
             rf'resource\s+["\']?{re.escape(resource_type)}["\']?\s+["\']?{re.escape(resource_name)}["\']?\s*\{{'
         )
-        attr_re = re.compile(rf'^(\s*{re.escape(attribute_name)}\s*=\s*")([^"]+)(".*)$')
+        attr_quoted_re = re.compile(rf'^(\s*{re.escape(attribute_name)}\s*=\s*")([^"]+)(".*)$')
+        attr_unquoted_re = re.compile(
+            rf'^(\s*{re.escape(attribute_name)}\s*=\s*)([^\s#/"\'][^\n\r#]*?)((\s*(?:#|//).*|\s*))$'
+        )
 
         old_value = None
         updated_lines = []
@@ -91,12 +94,21 @@ class TerraformHCLParser:
             elif in_target_resource and not is_comment:
                 depth += line.count('{') - line.count('}')
                 if old_value is None:
-                    match = attr_re.search(line)
-                    if match:
-                        old_value = match.group(2)
-                        line = match.group(1) + new_value + match.group(3)
+                    # Check quoted attribute first (e.g. instance_type = "t3.medium")
+                    match_quoted = attr_quoted_re.search(line)
+                    if match_quoted:
+                        old_value = match_quoted.group(2)
+                        line = match_quoted.group(1) + new_value + match_quoted.group(3)
                         if not line.endswith("\n") and not line.endswith("\r"):
                             line += "\n"
+                    else:
+                        # Check unquoted attribute (e.g. instance_type = var.instance_type)
+                        match_unquoted = attr_unquoted_re.search(line)
+                        if match_unquoted:
+                            old_value = match_unquoted.group(2).strip()
+                            line = f'{match_unquoted.group(1)}"{new_value}"{match_unquoted.group(3)}'
+                            if not line.endswith("\n") and not line.endswith("\r"):
+                                line += "\n"
                 if depth <= 0:
                     in_target_resource = False
 
@@ -162,6 +174,9 @@ class TerraformHCLParser:
                         attrs[key] = False
                     elif val_str.isdigit():
                         attrs[key] = int(val_str)
+                    else:
+                        clean_val = re.split(r'\s+(?:#|//)', val_str)[0].strip()
+                        attrs[key] = clean_val
 
             # Parse tags block if present
             tags_match = re.search(r'tags\s*=\s*{([^}]+)}', block_body)

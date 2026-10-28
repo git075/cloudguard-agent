@@ -100,4 +100,16 @@
 - [x] **Task 9.13:** Created `tests/test_production_hardening.py` expanding the automated test suite to 82/82 passing tests (100% green).
 - [x] **Task 9.14:** Documented all 12 production gaps and architectural solutions in `docs/LEARNING_GUIDE.md` Section 16.
 
+---
+
+## Phase 10: Enterprise Production Hardening & Infrastructure Security (7 Steps) — ✅ COMPLETED
+- [x] **Task 10.1 (Step 1):** Fixed AWS Cost Explorer date aggregation in `aws_collector.py` by switching to daily granularity over 30 days with pagination loop, eliminating the `ValidationException: Start date must be the first of a month for monthly granularity`.
+- [x] **Task 10.2 (Step 2):** Scoped StateGuard Rules 1 & 2 (`cpu_check` and `ram_check`) in `invariants.py` to only trigger on `proposed` or `committed` spec changes, preventing crashes on resources whose optimization was rejected.
+- [x] **Task 10.3 (Step 3):** Consolidated, uncommented, and pinned all production dependencies in `requirements.txt` (including asyncpg, celery, redis, flower, prometheus, structlog, sentry-sdk, etc.) and simplified `Dockerfile`.
+- [x] **Task 10.4 (Step 4):** Hardened Celery distributed queue configuration (`task_acks_late=True`, `task_reject_on_worker_lost=True`, `worker_prefetch_multiplier=1`, `task_soft_time_limit=3300`, `task_time_limit=3600`) and fixed retry status bug in `scan_worker.py` (marking as `retrying` instead of prematurely marking `failed`).
+- [x] **Task 10.5 (Step 5):** Removed synchronous blocking fallback in `scan_router.py` to prevent event loop starvation during Celery broker outages; properly returns HTTP 503 and records failure in DB.
+- [x] **Task 10.6 (Step 6):** Upgraded `hcl_parser.py` (`mutate_instance_spec` and fallback parser) to cleanly parse and mutate unquoted Terraform variables (`var.*`), locals (`local.*`), and ternary expressions.
+- [x] **Task 10.7 (Step 7):** Secured `docker-compose.yml` by removing public `0.0.0.0` port exposures for PostgreSQL and Redis (bound to `127.0.0.1`) and added mandatory Redis authentication password.
+- [x] **Task 10.8:** Automated test suite expanded to 86/86 passing tests with 100% pass rate.
+
 

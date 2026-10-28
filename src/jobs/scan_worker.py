@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy.orm import Session
+from celery.exceptions import SoftTimeLimitExceeded
 
 from src.jobs.celery_app import celery_app
 from src.db.session import SyncSessionLocal
@@ -157,15 +158,36 @@ def execute_cloudguard_scan(
             "total_savings_usd": total_savings,
         }
 
-    except Exception as exc:
-        logger.exception("Error executing scan job %s: %s", scan_job_id, str(exc))
+    except SoftTimeLimitExceeded:
+        logger.error("ScanJob %s exceeded soft runtime limit (55 mins)", scan_job_id)
         db.rollback()
         scan_job = db.query(ScanJob).filter(ScanJob.id == scan_job_id).first()
         if scan_job:
             scan_job.status = "failed"
-            scan_job.error_message = str(exc)
+            scan_job.error_message = "Scan job exceeded 55-minute runtime limit."
+            scan_job.completed_at = datetime.utcnow()
             db.commit()
-        raise self.retry(exc=exc)
+        return {"status": "failed", "error": "SoftTimeLimitExceeded"}
+    except Exception as exc:
+        logger.exception("Error executing scan job %s: %s", scan_job_id, str(exc))
+        db.rollback()
+        retries = getattr(self.request, "retries", 0)
+        max_retries = getattr(self, "max_retries", 3)
+        scan_job = db.query(ScanJob).filter(ScanJob.id == scan_job_id).first()
+
+        if retries >= max_retries:
+            if scan_job:
+                scan_job.status = "failed"
+                scan_job.error_message = f"Failed after {max_retries} attempts: {str(exc)}"
+                scan_job.completed_at = datetime.utcnow()
+                db.commit()
+            return {"status": "failed", "error": str(exc)}
+        else:
+            if scan_job:
+                scan_job.status = "retrying"
+                scan_job.error_message = f"Transient error (attempt {retries + 1}/{max_retries}): {str(exc)}"
+                db.commit()
+            raise self.retry(exc=exc)
     finally:
         db.close()
 

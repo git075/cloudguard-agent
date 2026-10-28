@@ -28,12 +28,18 @@ def get_default_cloudguard_registry() -> InvariantRegistry:
     # Rule 1: Peak CPU Headroom (CPU <= 80%)
     @registry.invariant(name="cpu_headroom_check", mode="block", description="Peak CPU <= 80%")
     def cpu_check(s):
-        return s.get("peak_cpu_percent", 0.0) <= 80.0
+        if s.get("status") in ("proposed", "committed") or "status" not in s:
+            if s.get("proposed_spec") and s.get("proposed_spec") != s.get("current_spec"):
+                return s.get("peak_cpu_percent", 0.0) <= 80.0
+        return True
 
     # Rule 2: Memory Buffer Check (Proposed RAM >= Peak Used RAM * 1.25)
     @registry.invariant(name="ram_safety_buffer_check", mode="block", description="Proposed RAM >= Peak Used RAM * 1.25")
     def ram_check(s):
-        return s.get("proposed_memory_gb", 0.0) >= (s.get("peak_memory_used_gb", 0.0) * 1.25)
+        if s.get("status") in ("proposed", "committed") or "status" not in s:
+            if s.get("proposed_spec") and s.get("proposed_spec") != s.get("current_spec"):
+                return s.get("proposed_memory_gb", 0.0) >= (s.get("peak_memory_used_gb", 0.0) * 1.25)
+        return True
 
     # Rule 3: Storage Encryption Requirement (Hardened Fail-Safe Default)
     @registry.invariant(name="storage_encryption_check", mode="block", description="Storage encryption must be enabled")

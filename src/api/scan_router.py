@@ -117,9 +117,14 @@ async def trigger_scan_job(
                 scan_job_id=scan_job.id, sample_tf_code=tf_code
             )
             celery_task_id = task.id
-        except Exception:
-            celery_task_id = f"local-sync-{scan_job.id}"
-            execute_cloudguard_scan(scan_job.id, tf_code)
+        except Exception as e:
+            scan_job.status = "failed"
+            scan_job.error_message = f"Background task queue broker unavailable: {str(e)}"
+            await db.commit()
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Background task queue service is currently unavailable. Please retry later.",
+            )
 
         return TriggerScanResponse(
             scan_job_id=scan_job.id,
