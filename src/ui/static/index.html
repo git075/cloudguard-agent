@@ -1,308 +1,371 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CloudGuard FinOps — Autonomous Governed Cloud Optimization</title>
+  <title>CloudGuard FinOps — Enterprise Cloud Cost Governance</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
     :root {
-      --bg-dark: #090D16;
-      --bg-card: rgba(18, 24, 38, 0.75);
-      --bg-card-border: rgba(255, 255, 255, 0.08);
-      --emerald-primary: #10B981;
-      --emerald-glow: rgba(16, 185, 129, 0.25);
-      --indigo-accent: #6366F1;
-      --indigo-glow: rgba(99, 102, 241, 0.3);
-      --amber-warn: #F59E0B;
-      --rose-block: #EF4444;
+      --bg-canvas: #0B0F19;
+      --bg-surface: #111827;
+      --bg-subtle: #1E293B;
+      --border-subtle: #1E293B;
+      --border-strong: #334155;
+      --primary: #2563EB;
+      --primary-hover: #1D4ED8;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --text-dim: #64748B;
     }
     body {
-      background-color: var(--bg-dark);
-      color: #E2E8F0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
       padding: 0;
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
-    .glass-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--bg-card-border);
-      border-radius: 1rem;
+    .enterprise-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 0.5rem;
     }
-    .glass-card:hover {
-      border-color: rgba(99, 102, 241, 0.35);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    }
-    .glow-emerald {
-      box-shadow: 0 0 25px var(--emerald-glow);
-    }
-    .glow-indigo {
-      box-shadow: 0 0 25px var(--indigo-glow);
+    .enterprise-card:hover {
+      border-color: var(--border-strong);
     }
     .font-mono-code {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
-    @keyframes pulse-subtle {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.85; transform: scale(0.99); }
+    /* Subtle custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
     }
-    .pulse-glow {
-      animation: pulse-subtle 3s infinite ease-in-out;
+    ::-webkit-scrollbar-track {
+      background: #0B0F19;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #27354A;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3B4D66;
     }
   </style>
 </head>
-<body class="bg-[#090D16] text-slate-100 antialiased selection:bg-indigo-500 selection:text-white">
+<body class="bg-[#0B0F19] text-slate-100 antialiased selection:bg-blue-600 selection:text-white">
 
-  <!-- Top Navigation Header -->
-  <header class="sticky top-0 z-40 border-b border-white/10 bg-[#090D16]/80 backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+  <!-- Enterprise Header & Navigation -->
+  <header class="sticky top-0 z-40 border-b border-slate-800 bg-[#0F172A]/95 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
-      <!-- Logo & Branding -->
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-400 p-0.5 shadow-lg shadow-indigo-500/20">
-          <div class="w-full h-full bg-[#090D16] rounded-[10px] flex items-center justify-center">
-            <svg class="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <!-- Top Utility Bar: Organization & System Health -->
+      <div class="h-10 border-b border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+        <div class="flex items-center gap-4">
+          <!-- Org Switcher -->
+          <div class="flex items-center gap-2 font-medium">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="text-slate-300">Organization:</span>
+            <span class="text-white font-semibold flex items-center gap-1 cursor-pointer hover:text-blue-400 transition-colors">
+              Acme Global Corp
+              <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+            <span class="text-slate-600">|</span>
+            <span class="text-slate-400">Environment:</span>
+            <span class="text-slate-200 font-mono">aws-production (us-east-1)</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4 font-mono text-[11px]">
+          <span class="flex items-center gap-1.5 text-slate-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+            API v0.1.0 • Production Ready
+          </span>
+          <span class="text-slate-600">|</span>
+          <span class="text-slate-400">Tenant ID: <span class="text-slate-300">cg_tenant_9481a</span></span>
+        </div>
+      </div>
+
+      <!-- Main Navigation Bar -->
+      <div class="h-16 flex items-center justify-between">
+        
+        <!-- Logo & Title -->
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm">
+            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
           </div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">CloudGuard</span>
-            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">FinOps</span>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-base tracking-tight text-white">CloudGuard</span>
+              <span class="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-900/60 text-blue-300 border border-blue-700/50">FinOps Enterprise</span>
+            </div>
+            <p class="text-[11px] text-slate-400">Autonomous GitOps Engine powered by StateGuard</p>
           </div>
-          <p class="text-[11px] text-slate-400 font-medium">Autonomous GitOps Engine powered by StateGuard</p>
-        </div>
-      </div>
-
-      <!-- Navigation Tabs -->
-      <nav class="hidden md:flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/5 text-sm">
-        <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="px-3.5 py-1.5 rounded-lg font-medium transition-all bg-indigo-600 text-white shadow-sm shadow-indigo-500/25">Dashboard</button>
-        <button onclick="switchTab('remediations')" id="tab-btn-remediations" class="px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition-all">Pull Requests</button>
-        <button onclick="switchTab('audit')" id="tab-btn-audit" class="px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition-all">Swarm & StateGuard</button>
-        <button onclick="openModal('aws-modal')" class="px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition-all flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-          </svg>
-          AWS Accounts
-        </button>
-      </nav>
-
-      <!-- Right Header Actions -->
-      <div class="flex items-center gap-3">
-        <!-- AWS Account Indicator Badge -->
-        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          <span class="text-slate-400">AWS:</span>
-          <span class="font-mono text-slate-200 font-medium">123456789012 (us-east-1)</span>
         </div>
 
-        <!-- Scan Trigger Button -->
-        <button onclick="triggerAutonomousScan()" id="btn-scan" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-semibold text-sm shadow-lg shadow-emerald-500/20 active:scale-95 transition-all">
-          <svg class="w-4 h-4 text-slate-950" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-          <span id="btn-scan-text">Scan Account</span>
-        </button>
-      </div>
+        <!-- Navigation Tabs -->
+        <nav class="hidden md:flex items-center gap-1 text-xs font-medium">
+          <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="px-3.5 py-2 rounded-md transition-colors bg-blue-600 text-white font-semibold">Recommendations</button>
+          <button onclick="switchTab('remediations')" id="tab-btn-remediations" class="px-3.5 py-2 rounded-md transition-colors text-slate-400 hover:text-white hover:bg-slate-800">GitOps PRs (6)</button>
+          <button onclick="switchTab('audit')" id="tab-btn-audit" class="px-3.5 py-2 rounded-md transition-colors text-slate-400 hover:text-white hover:bg-slate-800">Swarm Lineage</button>
+          <button onclick="switchTab('policies')" id="tab-btn-policies" class="px-3.5 py-2 rounded-md transition-colors text-slate-400 hover:text-white hover:bg-slate-800">StateGuard Policies (13)</button>
+        </nav>
 
-    </div>
-  </header>
-
-  <!-- Main Container -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-
-    <!-- Active Scanning Progress Banner (Hidden by default) -->
-    <div id="scan-progress-banner" class="hidden glass-card p-6 border-indigo-500/30 glow-indigo transition-all">
-      <div class="flex items-center justify-between mb-3">
+        <!-- Right Action Controls -->
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center animate-spin">
-            <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          <button onclick="openModal('aws-modal')" class="px-3 py-1.5 rounded-md border border-slate-700 hover:border-slate-600 bg-slate-800/80 hover:bg-slate-800 text-xs font-medium text-slate-200 transition-all flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-          </div>
-          <div>
-            <h4 class="font-semibold text-sm text-white">Autonomous Celery Multi-Agent Scan In Progress</h4>
-            <p id="scan-status-detail" class="text-xs text-indigo-300 font-mono">Step 1/4: Fetching 90-Day CloudWatch batch telemetry...</p>
-          </div>
-        </div>
-        <span id="scan-percent" class="text-xs font-mono font-bold text-indigo-400">25%</span>
-      </div>
-      <!-- Progress Bar -->
-      <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-        <div id="scan-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 via-teal-400 to-emerald-400 transition-all duration-700" style="width: 25%"></div>
-      </div>
-    </div>
+            AWS Accounts
+          </button>
 
-    <!-- TAB 1: EXECUTIVE DASHBOARD -->
-    <section id="view-dashboard" class="space-y-8">
-      
-      <!-- KPI Stats Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        
-        <!-- Card 1: Annualized Savings -->
-        <div class="glass-card p-6 relative overflow-hidden group">
-          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
-          <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-3">
-            <span>ANNUALIZED COST SAVINGS</span>
-            <span class="flex items-center text-emerald-400 font-semibold bg-emerald-950/50 px-2 py-0.5 rounded-full border border-emerald-500/30">+32% MoM</span>
-          </div>
-          <div class="text-3xl font-bold font-mono tracking-tight text-white mb-1" id="stat-annualized">$24,500.00</div>
-          <div class="text-xs text-slate-400">
-            <span class="text-emerald-400 font-mono font-medium" id="stat-monthly">+$2,041.67</span> / month identified
-          </div>
-        </div>
-
-        <!-- Card 2: Active PRs -->
-        <div class="glass-card p-6 relative overflow-hidden group">
-          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-xl group-hover:bg-indigo-500/20 transition-all"></div>
-          <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-3">
-            <span>GITOPS PULL REQUESTS</span>
-            <span class="text-indigo-400 font-semibold bg-indigo-950/50 px-2 py-0.5 rounded-full border border-indigo-500/30">Auto-Generated</span>
-          </div>
-          <div class="text-3xl font-bold font-mono tracking-tight text-white mb-1" id="stat-open-prs">6 Open</div>
-          <div class="text-xs text-slate-400">Across 3 Terraform repositories</div>
-        </div>
-
-        <!-- Card 3: StateGuard Protection Rate -->
-        <div class="glass-card p-6 relative overflow-hidden group">
-          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-teal-500/10 rounded-full blur-xl group-hover:bg-teal-500/20 transition-all"></div>
-          <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-3">
-            <span>STATEGUARD SAFETY RATE</span>
-            <span class="text-emerald-400 font-semibold bg-emerald-950/50 px-2 py-0.5 rounded-full border border-emerald-500/30">100% Invariant Pass</span>
-          </div>
-          <div class="text-3xl font-bold font-mono tracking-tight text-emerald-400 mb-1">0 Regressions</div>
-          <div class="text-xs text-slate-400">4 Unsafe Proposals Blocked by Saga</div>
-        </div>
-
-        <!-- Card 4: Multi-Tenant Scanned Resources -->
-        <div class="glass-card p-6 relative overflow-hidden group">
-          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition-all"></div>
-          <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-3">
-            <span>ANALYZED WORKLOADS</span>
-            <span class="text-purple-400 font-semibold bg-purple-950/50 px-2 py-0.5 rounded-full border border-purple-500/30">90-Day P99</span>
-          </div>
-          <div class="text-3xl font-bold font-mono tracking-tight text-white mb-1">128 Resources</div>
-          <div class="text-xs text-slate-400">RDS Postgres/MySQL & EC2 Fleet</div>
-        </div>
-
-      </div>
-
-      <!-- Main Visual Section: Active Remediation Pull Requests -->
-      <div class="glass-card overflow-hidden">
-        <div class="p-6 border-b border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h3 class="text-lg font-bold text-white flex items-center gap-2">
-              <span>⚡ Active Cost Remediation Pull Requests</span>
-              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Automated GitOps</span>
-            </h3>
-            <p class="text-xs text-slate-400 mt-1">Right-sizing mutations generated by Swarm consensus and verified by StateGuard invariants.</p>
-          </div>
-          <button onclick="openModal('batch-pr-modal')" class="px-3.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-300 border border-white/10 transition-all flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+          <button onclick="triggerAutonomousScan()" id="btn-scan" class="flex items-center gap-2 px-3.5 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-sm transition-all">
+            <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Create Consolidated Batch PR
+            <span id="btn-scan-text">Run Optimization Scan</span>
           </button>
         </div>
 
-        <!-- PR Table List -->
-        <div class="divide-y divide-white/5 overflow-x-auto">
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Active Scanning Progress Banner (Enterprise Console Style) -->
+    <div id="scan-progress-banner" class="hidden enterprise-card p-5 border-blue-600/40 bg-slate-900/90 transition-all">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div>
+            <h4 class="font-semibold text-sm text-white">Autonomous Celery Multi-Agent Scan In Progress</h4>
+            <p id="scan-status-detail" class="text-xs text-slate-400 font-mono mt-0.5">Step 1/4: Querying 90-day CloudWatch telemetry and Cost Explorer API...</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="scan-percent" class="text-xs font-mono font-bold text-blue-400">25%</span>
+        </div>
+      </div>
+      <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+        <div id="scan-progress-bar" class="h-full bg-blue-600 transition-all duration-500" style="width: 25%"></div>
+      </div>
+    </div>
+
+    <!-- KPI Metric Cards Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- Metric 1: Monthly Cost Reduction -->
+      <div class="enterprise-card p-5">
+        <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+          <span>Identified Monthly Savings</span>
+          <span class="text-[11px] font-semibold text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-1.5 py-0.5 rounded">Active</span>
+        </div>
+        <div class="text-2xl font-bold font-mono tracking-tight text-white mb-1" id="stat-monthly">+$2,041.67 <span class="text-xs font-normal text-slate-400">/ mo</span></div>
+        <div class="text-xs text-slate-400">
+          Annualized: <span class="text-slate-200 font-mono font-semibold" id="stat-annualized">$24,500.00 / yr</span>
+        </div>
+      </div>
+
+      <!-- Metric 2: Fleet Optimization Rate -->
+      <div class="enterprise-card p-5">
+        <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+          <span>Fleet Sizing Efficiency</span>
+          <span class="text-[11px] font-semibold text-blue-400 bg-blue-950/60 border border-blue-800/60 px-1.5 py-0.5 rounded">Target: 95%</span>
+        </div>
+        <div class="text-2xl font-bold font-mono tracking-tight text-white mb-1">94.2%</div>
+        <div class="text-xs text-slate-400">
+          Analyzed: <span class="text-slate-200 font-mono">128 resources</span> across RDS & EC2
+        </div>
+      </div>
+
+      <!-- Metric 3: Active GitOps Pull Requests -->
+      <div class="enterprise-card p-5">
+        <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+          <span>GitOps Pull Requests</span>
+          <span class="text-[11px] font-semibold text-slate-300 bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded">Awaiting Review</span>
+        </div>
+        <div class="text-2xl font-bold font-mono tracking-tight text-white mb-1" id="stat-open-prs">6 Open PRs</div>
+        <div class="text-xs text-slate-400">
+          Targeting: <span class="text-slate-200 font-mono">3 Terraform repos</span>
+        </div>
+      </div>
+
+      <!-- Metric 4: StateGuard Safety Guarantee -->
+      <div class="enterprise-card p-5">
+        <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+          <span>StateGuard Safety Rate</span>
+          <span class="text-[11px] font-semibold text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-1.5 py-0.5 rounded">0 Regressions</span>
+        </div>
+        <div class="text-2xl font-bold font-mono tracking-tight text-emerald-400 mb-1">100% Invariant Pass</div>
+        <div class="text-xs text-slate-400">
+          Blocked: <span class="text-slate-200 font-mono">4 unsafe proposals</span> (0 OOM risks)
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB 1: RECOMMENDATIONS & WORKLOAD INVENTORY -->
+    <section id="view-dashboard" class="space-y-4">
+      
+      <!-- Table Filter Toolbar -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 enterprise-card bg-slate-900/60">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider mr-2">Filter:</span>
+          <button onclick="filterWorkloads('all')" id="filter-all" class="px-2.5 py-1 text-xs font-medium rounded bg-slate-800 text-white border border-slate-700">All Workloads (3)</button>
+          <button onclick="filterWorkloads('rds')" id="filter-rds" class="px-2.5 py-1 text-xs font-medium rounded text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent">RDS Databases (2)</button>
+          <button onclick="filterWorkloads('ec2')" id="filter-ec2" class="px-2.5 py-1 text-xs font-medium rounded text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent">EC2 Compute (1)</button>
+        </div>
+
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <input type="text" id="resource-search" onkeyup="searchWorkloads()" placeholder="Filter by resource name or instance..." class="w-full sm:w-64 bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-600 font-mono">
+        </div>
+      </div>
+
+      <!-- Enterprise Resource Inventory Table -->
+      <div class="enterprise-card overflow-hidden">
+        <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-semibold text-white">Identified Rightsizing Opportunities</h3>
+            <p class="text-xs text-slate-400 mt-0.5">Autonomous proposals generated by 3-agent swarm and validated against 13 StateGuard invariants.</p>
+          </div>
+          <span class="text-xs font-mono text-slate-400">Total Net Yield: <strong class="text-emerald-400 font-semibold font-mono">-$1,734.00/mo</strong></span>
+        </div>
+
+        <div class="divide-y divide-slate-800/80 overflow-x-auto text-xs">
           
-          <!-- PR Item 1: Production DB -->
-          <div class="p-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 hover:bg-white/[0.02] transition-colors" id="pr-row-101">
-            <div class="space-y-2 max-w-xl">
-              <div class="flex flex-wrap items-center gap-2">
-                <span class="font-mono text-xs font-semibold text-indigo-400 bg-indigo-950/60 px-2.5 py-1 rounded-md border border-indigo-500/20">PR #42</span>
-                <span class="font-semibold text-sm text-white">aws_db_instance.production_db</span>
-                <!-- StateGuard Proof Badge -->
-                <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-[11px] text-emerald-300 font-mono">
-                  <svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                  </svg>
-                  StateGuard Verified (Peak CPU: 42.5% &lt; 80%, RAM: +25% Buffer)
+          <!-- Resource 1: Production RDS Database -->
+          <div class="p-4 hover:bg-slate-800/40 transition-colors workload-item" data-service="rds" id="pr-row-101">
+            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+              
+              <!-- Left: Resource Info & Sizing Delta -->
+              <div class="space-y-1.5 max-w-xl">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-blue-950/80 border border-blue-800/60 text-blue-300 font-mono font-medium text-[11px]">PR #42</span>
+                  <span class="font-semibold text-white font-mono text-sm">aws_db_instance.production_db</span>
+                  <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono text-[11px]">PostgreSQL 15</span>
+                  <span class="px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/60 text-emerald-300 font-mono text-[11px]">StateGuard Certified</span>
+                </div>
+
+                <div class="flex items-center gap-3 text-slate-300 font-mono text-xs">
+                  <span class="text-slate-400 line-through">db.r5.2xlarge</span>
+                  <span class="text-slate-500">➔</span>
+                  <span class="text-emerald-400 font-semibold">db.r6g.xlarge</span>
+                  <span class="text-[11px] text-slate-400">(AWS Graviton3 ARM • 32 GB RAM)</span>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400 font-mono">
+                  <span>90-Day P99 CPU: <strong class="text-slate-200">42.5%</strong> (&le; 80% rule)</span>
+                  <span>Free RAM Floor: <strong class="text-slate-200">43.0 GB</strong> (+25% buffer verified)</span>
+                  <span>Active Conns: <strong class="text-slate-200">124</strong> / 2,630 limit</span>
                 </div>
               </div>
-              <p class="text-xs text-slate-400">
-                Migration from Intel x86 memory-optimized <code class="font-mono text-slate-300">db.r5.2xlarge</code> (64GB) to AWS Graviton ARM <code class="font-mono text-emerald-400">db.r6g.xlarge</code> (32GB).
-              </p>
-              <div class="text-[11px] text-slate-500 font-mono">Target: <span class="text-slate-400">terraform/rds.tf</span> • Branch: <span class="text-indigo-400">cloudguard/opt-production_db-20261013</span></div>
-            </div>
 
-            <div class="flex items-center gap-6 w-full lg:w-auto justify-between lg:justify-end border-t lg:border-t-0 pt-4 lg:pt-0 border-white/5">
-              <div class="text-right">
-                <div class="text-xl font-bold font-mono text-emerald-400" id="pr-101-savings">-$1,104.00 <span class="text-xs font-normal text-slate-400">/ mo</span></div>
-                <div class="text-[11px] text-slate-500">-$13,248.00 / year (78.8% cut)</div>
+              <!-- Right: Cost Yield & Action Controls -->
+              <div class="flex items-center gap-5 w-full lg:w-auto justify-between lg:justify-end border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-800">
+                <div class="text-right">
+                  <div class="text-base font-bold font-mono text-emerald-400" id="pr-101-savings">-$1,104.00 <span class="text-xs font-normal text-slate-400">/ mo</span></div>
+                  <div class="text-[11px] font-mono text-slate-500">$1,400.00 ➔ $296.00 (-78.8%)</div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button onclick="viewPRModal('pr-101')" class="px-3 py-1.5 rounded border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium transition-colors">View Diff</button>
+                  <button onclick="simulateMerge('pr-row-101', 1104.0)" class="px-3.5 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-sm transition-colors">Merge PR</button>
+                </div>
               </div>
-              <div class="flex items-center gap-2">
-                <button onclick="viewPRModal('pr-101')" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-200 border border-white/10 transition-all">View Diff</button>
-                <button onclick="simulateMerge('pr-row-101', 1104.0)" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-md shadow-indigo-500/20 active:scale-95 transition-all">Merge PR</button>
-              </div>
+
             </div>
           </div>
 
-          <!-- PR Item 2: Analytics DB -->
-          <div class="p-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 hover:bg-white/[0.02] transition-colors" id="pr-row-102">
-            <div class="space-y-2 max-w-xl">
-              <div class="flex flex-wrap items-center gap-2">
-                <span class="font-mono text-xs font-semibold text-indigo-400 bg-indigo-950/60 px-2.5 py-1 rounded-md border border-indigo-500/20">PR #45</span>
-                <span class="font-semibold text-sm text-white">aws_db_instance.analytics_warehouse</span>
-                <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-[11px] text-emerald-300 font-mono">
-                  <svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                  </svg>
-                  StateGuard Verified (Peak CPU: 31% &lt; 80%, RAM: +30% Buffer)
+          <!-- Resource 2: Analytics RDS Warehouse -->
+          <div class="p-4 hover:bg-slate-800/40 transition-colors workload-item" data-service="rds" id="pr-row-102">
+            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+              
+              <div class="space-y-1.5 max-w-xl">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-blue-950/80 border border-blue-800/60 text-blue-300 font-mono font-medium text-[11px]">PR #45</span>
+                  <span class="font-semibold text-white font-mono text-sm">aws_db_instance.analytics_warehouse</span>
+                  <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono text-[11px]">MySQL 8.0</span>
+                  <span class="px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/60 text-emerald-300 font-mono text-[11px]">StateGuard Certified</span>
+                </div>
+
+                <div class="flex items-center gap-3 text-slate-300 font-mono text-xs">
+                  <span class="text-slate-400 line-through">db.r5.xlarge</span>
+                  <span class="text-slate-500">➔</span>
+                  <span class="text-emerald-400 font-semibold">db.m6g.xlarge</span>
+                  <span class="text-[11px] text-slate-400">(General Purpose ARM • 16 GB RAM)</span>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400 font-mono">
+                  <span>90-Day P99 CPU: <strong class="text-slate-200">31.0%</strong></span>
+                  <span>Free RAM Floor: <strong class="text-slate-200">22.4 GB</strong></span>
+                  <span>EBS IOPS: <strong class="text-slate-200">850 IOPS</strong> (&le; 3,000 baseline)</span>
                 </div>
               </div>
-              <p class="text-xs text-slate-400">
-                Right-sizing <code class="font-mono text-slate-300">db.r5.xlarge</code> (32GB) to Graviton general-purpose <code class="font-mono text-emerald-400">db.m6g.xlarge</code> (16GB).
-              </p>
-              <div class="text-[11px] text-slate-500 font-mono">Target: <span class="text-slate-400">terraform/analytics.tf</span> • Branch: <span class="text-indigo-400">cloudguard/opt-analytics-20261013</span></div>
-            </div>
 
-            <div class="flex items-center gap-6 w-full lg:w-auto justify-between lg:justify-end border-t lg:border-t-0 pt-4 lg:pt-0 border-white/5">
-              <div class="text-right">
-                <div class="text-xl font-bold font-mono text-emerald-400">-$450.00 <span class="text-xs font-normal text-slate-400">/ mo</span></div>
-                <div class="text-[11px] text-slate-500">-$5,400.00 / year (64.3% cut)</div>
+              <div class="flex items-center gap-5 w-full lg:w-auto justify-between lg:justify-end border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-800">
+                <div class="text-right">
+                  <div class="text-base font-bold font-mono text-emerald-400">-$450.00 <span class="text-xs font-normal text-slate-400">/ mo</span></div>
+                  <div class="text-[11px] font-mono text-slate-500">$700.00 ➔ $250.00 (-64.3%)</div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button onclick="viewPRModal('pr-102')" class="px-3 py-1.5 rounded border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium transition-colors">View Diff</button>
+                  <button onclick="simulateMerge('pr-row-102', 450.0)" class="px-3.5 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-sm transition-colors">Merge PR</button>
+                </div>
               </div>
-              <div class="flex items-center gap-2">
-                <button onclick="viewPRModal('pr-102')" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-200 border border-white/10 transition-all">View Diff</button>
-                <button onclick="simulateMerge('pr-row-102', 450.0)" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-md shadow-indigo-500/20 active:scale-95 transition-all">Merge PR</button>
-              </div>
+
             </div>
           </div>
 
-          <!-- PR Item 3: Web App EC2 Cluster -->
-          <div class="p-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 hover:bg-white/[0.02] transition-colors" id="pr-row-103">
-            <div class="space-y-2 max-w-xl">
-              <div class="flex flex-wrap items-center gap-2">
-                <span class="font-mono text-xs font-semibold text-indigo-400 bg-indigo-950/60 px-2.5 py-1 rounded-md border border-indigo-500/20">PR #48</span>
-                <span class="font-semibold text-sm text-white">aws_instance.api_gateway_cluster</span>
-                <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-[11px] text-emerald-300 font-mono">
-                  <svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                  </svg>
-                  StateGuard Verified (Burstable Safety: Avg CPU 14% &lt; 20% limit)
+          <!-- Resource 3: Web API Gateway Fleet -->
+          <div class="p-4 hover:bg-slate-800/40 transition-colors workload-item" data-service="ec2" id="pr-row-103">
+            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+              
+              <div class="space-y-1.5 max-w-xl">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-blue-950/80 border border-blue-800/60 text-blue-300 font-mono font-medium text-[11px]">PR #48</span>
+                  <span class="font-semibold text-white font-mono text-sm">aws_instance.api_gateway_cluster</span>
+                  <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono text-[11px]">EC2 Ubuntu Fleet</span>
+                  <span class="px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/60 text-emerald-300 font-mono text-[11px]">StateGuard Certified</span>
+                </div>
+
+                <div class="flex items-center gap-3 text-slate-300 font-mono text-xs">
+                  <span class="text-slate-400 line-through">m5.xlarge</span>
+                  <span class="text-slate-500">➔</span>
+                  <span class="text-emerald-400 font-semibold">t4g.large</span>
+                  <span class="text-[11px] text-slate-400">(Burstable Graviton ARM • 8 GB RAM)</span>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400 font-mono">
+                  <span>Avg CPU: <strong class="text-slate-200">14.0%</strong> (&lt; 20% burst limit)</span>
+                  <span>EBS IOPS: <strong class="text-slate-200">620 IOPS</strong> (&lt; 3,000 threshold)</span>
+                  <span>AMI Architecture: <strong class="text-slate-200">ARM64 Compatible</strong></span>
                 </div>
               </div>
-              <p class="text-xs text-slate-400">
-                Migration from <code class="font-mono text-slate-300">m5.xlarge</code> (4 vCPU / 16GB) to Graviton burstable <code class="font-mono text-emerald-400">t4g.large</code> (2 vCPU / 8GB).
-              </p>
-              <div class="text-[11px] text-slate-500 font-mono">Target: <span class="text-slate-400">terraform/compute.tf</span> • Branch: <span class="text-indigo-400">cloudguard/opt-api_gateway-20261013</span></div>
-            </div>
 
-            <div class="flex items-center gap-6 w-full lg:w-auto justify-between lg:justify-end border-t lg:border-t-0 pt-4 lg:pt-0 border-white/5">
-              <div class="text-right">
-                <div class="text-xl font-bold font-mono text-emerald-400">-$180.00 <span class="text-xs font-normal text-slate-400">/ mo</span></div>
-                <div class="text-[11px] text-slate-500">-$2,160.00 / year (51.2% cut)</div>
+              <div class="flex items-center gap-5 w-full lg:w-auto justify-between lg:justify-end border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-800">
+                <div class="text-right">
+                  <div class="text-base font-bold font-mono text-emerald-400">-$180.00 <span class="text-xs font-normal text-slate-400">/ mo</span></div>
+                  <div class="text-[11px] font-mono text-slate-500">$350.00 ➔ $170.00 (-51.4%)</div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button onclick="viewPRModal('pr-103')" class="px-3 py-1.5 rounded border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium transition-colors">View Diff</button>
+                  <button onclick="simulateMerge('pr-row-103', 180.0)" class="px-3.5 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-sm transition-colors">Merge PR</button>
+                </div>
               </div>
-              <div class="flex items-center gap-2">
-                <button onclick="viewPRModal('pr-103')" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-200 border border-white/10 transition-all">View Diff</button>
-                <button onclick="simulateMerge('pr-row-103', 180.0)" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-md shadow-indigo-500/20 active:scale-95 transition-all">Merge PR</button>
-              </div>
+
             </div>
           </div>
 
@@ -311,109 +374,231 @@
 
     </section>
 
-    <!-- TAB 2: REMEDIATIONS (PRs) VIEW -->
-    <section id="view-remediations" class="hidden space-y-6">
-      <div class="glass-card p-6">
-        <h3 class="text-lg font-bold text-white mb-2">Automated GitOps Pull Request Management</h3>
-        <p class="text-xs text-slate-400 mb-6">Every right-sizing suggestion is converted into a native GitHub Pull Request containing HCL code changes and StateGuard proof badges.</p>
-        
-        <div class="bg-black/30 rounded-xl p-4 border border-white/5 font-mono text-xs text-slate-300 space-y-2">
-          <div class="text-emerald-400 font-semibold">// Live GitHub App Webhook Integration</div>
-          <div>Repository: <span class="text-indigo-400">github.com/acme-corp/infrastructure</span></div>
-          <div>Installation ID: <span class="text-white">gh_inst_9841285</span> (Short-lived 60-minute installation token)</div>
-          <div>Status: <span class="text-emerald-400">Listening to push, pull_request, and check_suite events</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 3: MULTI-AGENT SWARM & STATEGUARD AUDIT TRACE -->
-    <section id="view-audit" class="hidden space-y-6">
-      <div class="glass-card p-6">
+    <!-- TAB 2: GITOPS PULL REQUESTS VIEW -->
+    <section id="view-remediations" class="hidden space-y-4">
+      <div class="enterprise-card p-5">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h3 class="text-lg font-bold text-white flex items-center gap-2">
-              <span>🤖 Multi-Agent Swarm Debate & StateGuard Execution Lineage</span>
-              <span class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-medium">Deterministic</span>
-            </h3>
-            <p class="text-xs text-slate-400 mt-1">Real-time debate log between FinOps, Architecture, and Security Agents governed by StateGuard invariants.</p>
+            <h3 class="text-sm font-semibold text-white">Active GitOps Pull Requests</h3>
+            <p class="text-xs text-slate-400 mt-0.5">Automated Pull Requests created across customer GitHub infrastructure repositories.</p>
           </div>
-          <span class="text-xs font-mono text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded-md border border-emerald-500/20">Consensus Reached: db.r6g.xlarge</span>
+          <button onclick="openModal('batch-pr-modal')" class="px-3 py-1.5 rounded border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 transition-colors">Create Consolidated Batch PR</button>
         </div>
 
-        <!-- Debate Steps Flow -->
-        <div class="space-y-4">
+        <div class="bg-slate-950 p-4 rounded border border-slate-800 font-mono text-xs text-slate-300 space-y-2">
+          <div class="text-blue-400 font-semibold">// Live GitHub App Webhook Integration</div>
+          <div>Repository: <span class="text-slate-100">github.com/acme-corp/infrastructure</span></div>
+          <div>Installation ID: <span class="text-slate-300">gh_inst_9841285</span> (Short-lived JWT installation token)</div>
+          <div>Status: <span class="text-emerald-400">Connected & Listening (push, pull_request, check_suite)</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: MULTI-AGENT SWARM AUDIT TRACE & CONSENSUS -->
+    <section id="view-audit" class="hidden space-y-4">
+      <div class="enterprise-card p-5">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+          <div>
+            <h3 class="text-sm font-semibold text-white">Autonomous Multi-Agent Consensus Debate</h3>
+            <p class="text-xs text-slate-400 mt-0.5">Real-time debate trace between FinOps, Architecture, and Security agents.</p>
+          </div>
+          <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/60 text-emerald-300">Agreed Target: db.r6g.xlarge</span>
+        </div>
+
+        <!-- 3-Agent Structured Timeline -->
+        <div class="space-y-3 text-xs">
           
           <!-- Agent 1: FinOps -->
-          <div class="bg-white/[0.02] border border-white/10 rounded-xl p-4 space-y-2">
+          <div class="p-3.5 rounded border border-slate-800 bg-slate-900/60 space-y-2">
             <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">F</span>
-                <span class="font-bold text-sm text-white">FinOps Agent (Constraint-Based Selector)</span>
-              </div>
-              <span class="text-xs font-mono text-emerald-400">Proposal: db.r6g.xlarge ($296.00/mo)</span>
+              <span class="font-bold text-white flex items-center gap-2">
+                <span class="w-5 h-5 rounded bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] font-bold">1</span>
+                FinOps Agent (Constraint-Based Optimal Selector)
+              </span>
+              <span class="font-mono text-emerald-400 font-semibold">Proposal: db.r6g.xlarge ($296.00/mo)</span>
             </div>
-            <p class="text-xs text-slate-300">
-              Evaluated 25+ instance catalog. Filtered candidates by required RAM (23.1 GB floor), checked DB connection threshold (124 conn / 0.70 &lt; 2,630 max limit), and prioritized AWS Graviton ARM architecture for 40% price-performance optimization.
+            <p class="text-slate-300 leading-relaxed">
+              Filtered candidates by required RAM (23.1 GB floor), checked DB connection threshold (124 conn / 0.70 &lt; 2,630 limit), and prioritized AWS Graviton ARM architecture for 40% price-performance boost.
             </p>
-            <div class="text-[11px] font-mono text-slate-400 bg-black/40 p-2.5 rounded-lg border border-white/5">
-              Current: db.r5.2xlarge ($1,400.00/mo) ➔ Proposed: db.r6g.xlarge ($296.00/mo) | Savings: -$1,104.00/mo
+            <div class="font-mono text-[11px] text-slate-400 bg-slate-950 p-2 rounded border border-slate-800">
+              Current: db.r5.2xlarge ($1,400.00/mo) ➔ Proposed: db.r6g.xlarge ($296.00/mo) | Net: -$1,104.00/mo
             </div>
           </div>
 
-          <!-- Agent 2: Architecture Agent -->
-          <div class="bg-white/[0.02] border border-white/10 rounded-xl p-4 space-y-2">
+          <!-- Agent 2: Architecture -->
+          <div class="p-3.5 rounded border border-slate-800 bg-slate-900/60 space-y-2">
             <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="w-6 h-6 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs">A</span>
-                <span class="font-bold text-sm text-white">Architecture & Reliability Agent</span>
-              </div>
-              <span class="text-xs font-mono text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-500/30">APPROVED</span>
+              <span class="font-bold text-white flex items-center gap-2">
+                <span class="w-5 h-5 rounded bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] font-bold">2</span>
+                Architecture & Reliability Agent
+              </span>
+              <span class="font-mono text-emerald-400 font-semibold">APPROVED (Buffer: 1.52x)</span>
             </div>
-            <p class="text-xs text-slate-300">
+            <p class="text-slate-300 leading-relaxed">
               Validated 90-day CloudWatch historical telemetry. Peak 90-day CPU is 42.5% (safely below 80% ceiling). Available free RAM minimum is 43.0 GB, confirming proposed 32 GB RAM provides comfortable 1.52x safety buffer over peak consumption. Zero OOM risk detected.
             </p>
           </div>
 
-          <!-- Agent 3: Security & Compliance -->
-          <div class="bg-white/[0.02] border border-white/10 rounded-xl p-4 space-y-2">
+          <!-- Agent 3: Security -->
+          <div class="p-3.5 rounded border border-slate-800 bg-slate-900/60 space-y-2">
             <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs">S</span>
-                <span class="font-bold text-sm text-white">Security & Compliance Agent</span>
-              </div>
-              <span class="text-xs font-mono text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-500/30">APPROVED</span>
+              <span class="font-bold text-white flex items-center gap-2">
+                <span class="w-5 h-5 rounded bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] font-bold">3</span>
+                Security & Compliance Agent
+              </span>
+              <span class="font-mono text-emerald-400 font-semibold">APPROVED (0 Regressions)</span>
             </div>
-            <p class="text-xs text-slate-300">
-              Verified storage encryption attribute (<code class="font-mono text-purple-300">storage_encrypted = true</code>), network boundary (<code class="font-mono text-purple-300">publicly_accessible = false</code>), and mandatory SOC 2 compliance tags (<code class="font-mono text-purple-300">Environment</code>, <code class="font-mono text-purple-300">Owner</code>). Zero compliance regressions.
+            <p class="text-slate-300 leading-relaxed">
+              Verified storage encryption attribute (<code class="font-mono text-blue-300">storage_encrypted = true</code>), network boundary (<code class="font-mono text-blue-300">publicly_accessible = false</code>), and mandatory SOC 2 compliance tags (<code class="font-mono text-blue-300">Environment</code>, <code class="font-mono text-blue-300">Owner</code>).
             </p>
           </div>
 
           <!-- StateGuard Governance Enforcer -->
-          <div class="bg-indigo-950/30 border border-indigo-500/30 rounded-xl p-5 space-y-3">
+          <div class="p-4 rounded border border-blue-900/60 bg-blue-950/20 space-y-2.5">
             <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <span class="font-bold text-white flex items-center gap-2">
+                <svg class="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
-                <span class="font-bold text-sm text-white">StateGuard Determinism & Safety Layer</span>
-              </div>
-              <span class="text-xs font-mono text-emerald-400 font-semibold">ALL INVARIANTS COMMITTED</span>
+                StateGuard Determinism & Safety Layer
+              </span>
+              <span class="font-mono text-emerald-400 font-bold">ALL 13 INVARIANTS COMMITTED</span>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">
-              <div class="bg-black/40 p-3 rounded-lg border border-white/5">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs font-mono">
+              <div class="bg-slate-950 p-2.5 rounded border border-slate-800">
                 <span class="text-slate-400">Transactional Proxy:</span>
-                <p class="text-emerald-400 font-bold mt-1">Snapshot Isolated</p>
+                <p class="text-emerald-400 font-bold mt-0.5">Snapshot Isolated</p>
               </div>
-              <div class="bg-black/40 p-3 rounded-lg border border-white/5">
-                <span class="text-slate-400">Drift Anomaly Z-Score:</span>
-                <p class="text-emerald-400 font-bold mt-1">Z = 0.82 ≤ 3.5 (Normal)</p>
+              <div class="bg-slate-950 p-2.5 rounded border border-slate-800">
+                <span class="text-slate-400">Drift Anomaly:</span>
+                <p class="text-emerald-400 font-bold mt-0.5">Z = 0.82 &le; 3.5 (Normal)</p>
               </div>
-              <div class="bg-black/40 p-3 rounded-lg border border-white/5">
+              <div class="bg-slate-950 p-2.5 rounded border border-slate-800">
                 <span class="text-slate-400">Saga Rollback Handler:</span>
-                <p class="text-indigo-300 font-bold mt-1">Branch Deletion Ready</p>
+                <p class="text-blue-300 font-bold mt-0.5">LIFO Compensation Ready</p>
               </div>
             </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: STATEGUARD POLICY MATRIX (13 RULES) -->
+    <section id="view-policies" class="hidden space-y-4">
+      <div class="enterprise-card p-5">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+          <div>
+            <h3 class="text-sm font-semibold text-white">Active StateGuard Governance Invariant Matrix</h3>
+            <p class="text-xs text-slate-400 mt-0.5">Deterministic rules evaluated against every proposed infrastructure spec before GitOps pull request generation.</p>
+          </div>
+          <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/60 text-emerald-300">13 Active Policies</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+          
+          <div class="p-3 rounded border border-slate-800 bg-slate-900/60 space-y-1">
+            <div class="flex items-center justify-between font-semibold text-white">
+              <span>Rule 1: CPU Headroom Check</span>
+              <span class="text-emerald-400 font-mono text-[11px]">Enforced</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">Guarantees projected CPU utilization stays strictly &le; 80% to absorb unpredicted load surges.</p>
+          </div>
+
+          <div class="p-3 rounded border border-slate-800 bg-slate-900/60 space-y-1">
+            <div class="flex items-center justify-between font-semibold text-white">
+              <span>Rule 2: RAM Safety Buffer</span>
+              <span class="text-emerald-400 font-mono text-[11px]">Enforced</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">Requires minimum 1.25x memory headroom over 90-day peak RAM to prevent OOM panics.</p>
+          </div>
+
+          <div class="p-3 rounded border border-slate-800 bg-slate-900/60 space-y-1">
+            <div class="flex items-center justify-between font-semibold text-white">
+              <span>Rule 3: Production Memory Floor</span>
+              <span class="text-emerald-400 font-mono text-[11px]">Enforced</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">Hard stops any production relational database from being downsized below 4.0 GB RAM.</p>
+          </div>
+
+          <div class="p-3 rounded border border-slate-800 bg-slate-900/60 space-y-1">
+            <div class="flex items-center justify-between font-semibold text-white">
+              <span>Rule 4: RDS Connection Ceiling</span>
+              <span class="text-emerald-400 font-mono text-[11px]">Enforced</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">Enforces active database connections &le; 70% of candidate instance connection pool cap.</p>
+          </div>
+
+          <div class="p-3 rounded border border-slate-800 bg-slate-900/60 space-y-1">
+            <div class="flex items-center justify-between font-semibold text-white">
+              <span>Rule 5: Graviton Engine Guard</span>
+              <span class="text-emerald-400 font-mono text-[11px]">Enforced</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">Blocks illegal ARM migration on proprietary engines lacking ARM support (Oracle, SQL Server).</p>
+          </div>
+
+          <div class="p-3 rounded border border-slate-800 bg-slate-900/60 space-y-1">
+            <div class="flex items-center justify-between font-semibold text-white">
+              <span>Rule 6: EC2 Architecture Lock</span>
+              <span class="text-emerald-400 font-mono text-[11px]">Enforced</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">Prevents x86_64 AMI boot failure on EC2 by requiring verified multi-arch AMI confirmation.</p>
+          </div>
+
+          <div class="p-3 rounded border border-slate-800 bg-slate-900/60 space-y-1">
+            <div class="flex items-center justify-between font-semibold text-white">
+              <span>Rule 7: Multi-AZ Multiplier</span>
+              <span class="text-emerald-400 font-mono text-[11px]">Enforced</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">Applies accurate 2.0x pricing multiplier on high-availability standby replicas.</p>
+          </div>
+
+          <div class="p-3 rounded border border-slate-800 bg-slate-900/60 space-y-1">
+            <div class="flex items-center justify-between font-semibold text-white">
+              <span>Rule 8: Dedicated EBS IOPS Cap</span>
+              <span class="text-emerald-400 font-mono text-[11px]">Enforced</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">Protects storage throughput by ensuring instance-level EBS bandwidth exceeds peak disk I/O.</p>
+          </div>
+
+          <div class="p-3 rounded border border-slate-800 bg-slate-900/60 space-y-1">
+            <div class="flex items-center justify-between font-semibold text-white">
+              <span>Rule 9: Confused Deputy Defense</span>
+              <span class="text-emerald-400 font-mono text-[11px]">Enforced</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">Enforces cryptographically random ExternalId validation on all cross-account AssumeRole requests.</p>
+          </div>
+
+          <div class="p-3 rounded border border-slate-800 bg-slate-900/60 space-y-1">
+            <div class="flex items-center justify-between font-semibold text-white">
+              <span>Rule 10: Negative Savings Veto</span>
+              <span class="text-emerald-400 font-mono text-[11px]">Enforced</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">Rejects any optimization proposal where target monthly cost exceeds current baseline spend.</p>
+          </div>
+
+          <div class="p-3 rounded border border-slate-800 bg-slate-900/60 space-y-1">
+            <div class="flex items-center justify-between font-semibold text-white">
+              <span>Rule 11: Drift Detector Z-Score</span>
+              <span class="text-emerald-400 font-mono text-[11px]">Enforced</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">Rejects mutation if recent telemetry exhibits statistical volatility exceeding Z &gt; 3.5.</p>
+          </div>
+
+          <div class="p-3 rounded border border-slate-800 bg-slate-900/60 space-y-1">
+            <div class="flex items-center justify-between font-semibold text-white">
+              <span>Rule 12: Verified Catalog Spec</span>
+              <span class="text-emerald-400 font-mono text-[11px]">Enforced</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">Guarantees candidate instance types exist in AWS regional physical hardware catalogs.</p>
+          </div>
+
+          <div class="p-3 rounded border border-slate-800 bg-slate-900/60 space-y-1">
+            <div class="flex items-center justify-between font-semibold text-white">
+              <span>Rule 13: SAGA Transaction Rollback</span>
+              <span class="text-emerald-400 font-mono text-[11px]">Enforced</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">LIFO automated compensation handlers cleanly delete Git branches if any phase fails.</p>
           </div>
 
         </div>
@@ -422,34 +607,34 @@
 
   </main>
 
-  <!-- MODAL 1: AWS CONNECT ACCOUNT MODAL -->
-  <div id="aws-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-    <div class="glass-card max-w-xl w-full p-6 space-y-5 border-indigo-500/30">
-      <div class="flex items-center justify-between border-b border-white/10 pb-4">
+  <!-- MODAL: AWS CONNECT ACCOUNT MODAL -->
+  <div id="aws-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+    <div class="enterprise-card max-w-xl w-full p-5 space-y-4 border-slate-700 bg-slate-900">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div>
-          <h3 class="text-lg font-bold text-white">Connect Customer AWS Account</h3>
+          <h3 class="text-sm font-semibold text-white">Connect AWS Customer Tenant</h3>
           <p class="text-xs text-slate-400 mt-0.5">Secure cross-account access protected against Confused Deputy attacks.</p>
         </div>
-        <button onclick="closeModal('aws-modal')" class="text-slate-400 hover:text-white">&times;</button>
+        <button onclick="closeModal('aws-modal')" class="text-slate-400 hover:text-white text-lg">&times;</button>
       </div>
 
-      <div class="space-y-4 text-xs">
+      <div class="space-y-3 text-xs">
         <div>
-          <label class="block text-slate-300 font-medium mb-1">Your Organization's Unique ExternalId (Secret)</label>
+          <label class="block text-slate-300 font-medium mb-1">Tenant Unique ExternalId (Secret)</label>
           <div class="flex items-center gap-2">
-            <input type="text" readonly value="cg_ext_4f9a8b1c2e3d7a8b9c0d1e2f3a4b5c6d" class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-indigo-300 font-mono text-xs">
-            <button onclick="copyToClipboard('cg_ext_4f9a8b1c2e3d7a8b9c0d1e2f3a4b5c6d')" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white font-medium">Copy</button>
+            <input type="text" readonly value="cg_ext_4f9a8b1c2e3d7a8b9c0d1e2f3a4b5c6d" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-blue-300 font-mono text-xs">
+            <button onclick="copyToClipboard('cg_ext_4f9a8b1c2e3d7a8b9c0d1e2f3a4b5c6d')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded text-white font-medium">Copy</button>
           </div>
-          <p class="text-[11px] text-slate-500 mt-1">Put this ExternalId into your IAM Role trust policy. AWS will reject any assume_role call that doesn't match this token.</p>
+          <p class="text-[11px] text-slate-500 mt-1">Configure this ExternalId in your AWS IAM trust policy to prevent confused deputy exploitation.</p>
         </div>
 
         <div>
-          <label class="block text-slate-300 font-medium mb-1">AWS IAM Role ARN</label>
-          <input type="text" placeholder="arn:aws:iam::123456789012:role/CloudGuardReadOnlyRole" class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-indigo-500">
+          <label class="block text-slate-300 font-medium mb-1">IAM Role ARN</label>
+          <input type="text" placeholder="arn:aws:iam::123456789012:role/CloudGuardReadOnlyRole" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-white font-mono text-xs focus:outline-none focus:border-blue-600">
         </div>
 
-        <div class="bg-black/30 p-3 rounded-lg border border-white/5 space-y-1 font-mono text-[11px] text-slate-400">
-          <div class="text-slate-300 font-semibold">// Recommended IAM Permissions:</div>
+        <div class="bg-slate-950 p-3 rounded border border-slate-800 font-mono text-[11px] text-slate-400 space-y-1">
+          <div class="text-slate-300 font-semibold">// Required Read-Only Permissions:</div>
           <div>- cloudwatch:GetMetricData</div>
           <div>- ce:GetCostAndUsage</div>
           <div>- rds:DescribeDBInstances</div>
@@ -457,26 +642,26 @@
         </div>
       </div>
 
-      <div class="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
-        <button onclick="closeModal('aws-modal')" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-300">Cancel</button>
-        <button onclick="saveAWSAccount()" class="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs">Save & Validate Connection</button>
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+        <button onclick="closeModal('aws-modal')" class="px-3 py-1.5 rounded border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300">Cancel</button>
+        <button onclick="saveAWSAccount()" class="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs">Validate & Connect</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL 2: PR DIFF DETAILS MODAL -->
-  <div id="diff-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-    <div class="glass-card max-w-2xl w-full p-6 space-y-5 border-white/10">
-      <div class="flex items-center justify-between border-b border-white/10 pb-4">
+  <!-- MODAL: PR DIFF DETAILS MODAL -->
+  <div id="diff-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+    <div class="enterprise-card max-w-2xl w-full p-5 space-y-4 border-slate-700 bg-slate-900">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div>
-          <h3 class="text-lg font-bold text-white">Terraform HCL AST Code Mutation</h3>
-          <p class="text-xs text-slate-400 mt-0.5">Target: <span class="text-indigo-400 font-mono">terraform/rds.tf</span></p>
+          <h3 class="text-sm font-semibold text-white">Terraform HCL Mutation Diff</h3>
+          <p class="text-xs text-slate-400 mt-0.5 font-mono">Target: <span class="text-blue-400">terraform/rds.tf</span> • Resource: <span class="text-slate-300">aws_db_instance.production_db</span></p>
         </div>
-        <button onclick="closeModal('diff-modal')" class="text-slate-400 hover:text-white">&times;</button>
+        <button onclick="closeModal('diff-modal')" class="text-slate-400 hover:text-white text-lg">&times;</button>
       </div>
 
-      <div class="bg-black/50 p-4 rounded-xl border border-white/10 font-mono text-xs space-y-1 overflow-x-auto">
-        <div class="text-slate-500">// main.tf diff generated by TerraformHCLParser</div>
+      <div class="bg-slate-950 p-4 rounded border border-slate-800 font-mono text-xs space-y-1 overflow-x-auto">
+        <div class="text-slate-500">// Generated by TerraformHCLParser with brace-depth isolation</div>
         <div class="text-slate-400">&nbsp;resource "aws_db_instance" "production_db" {</div>
         <div class="text-slate-400">&nbsp; &nbsp;allocated_storage &nbsp; = 500</div>
         <div class="text-slate-400">&nbsp; &nbsp;engine &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; = "postgres"</div>
@@ -487,15 +672,15 @@
         <div class="text-slate-400">&nbsp;}</div>
       </div>
 
-      <div class="flex items-center justify-between pt-3 border-t border-white/10">
-        <div class="text-xs font-mono text-emerald-400 font-bold">Monthly Savings: -$1,104.00</div>
-        <button onclick="closeModal('diff-modal')" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white">Close Diff</button>
+      <div class="flex items-center justify-between pt-3 border-t border-slate-800">
+        <div class="text-xs font-mono text-emerald-400 font-bold">Monthly Yield: -$1,104.00 (-78.8%)</div>
+        <button onclick="closeModal('diff-modal')" class="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white">Done</button>
       </div>
     </div>
   </div>
 
   <!-- Notification Toast -->
-  <div id="toast" class="fixed bottom-6 right-6 z-50 hidden px-4 py-3 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-400 text-xs font-medium shadow-2xl flex items-center gap-2 glow-emerald transition-all">
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden px-4 py-2.5 rounded border border-blue-800/80 bg-slate-900 text-slate-100 text-xs font-medium shadow-xl flex items-center gap-2 transition-all">
     <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
       <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
     </svg>
@@ -509,44 +694,50 @@
     let openPRs = 6;
 
     function switchTab(tabId) {
-      const tabs = ['dashboard', 'remediations', 'audit'];
+      const tabs = ['dashboard', 'remediations', 'audit', 'policies'];
       tabs.forEach(t => {
-        document.getElementById(`view-${t}`).classList.add('hidden');
+        const viewEl = document.getElementById(`view-${t}`);
+        if (viewEl) viewEl.classList.add('hidden');
         const btn = document.getElementById(`tab-btn-${t}`);
         if (btn) {
-          btn.className = "px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition-all";
+          btn.className = "px-3.5 py-2 rounded-md transition-colors text-slate-400 hover:text-white hover:bg-slate-800";
         }
       });
-      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+
+      const targetView = document.getElementById(`view-${tabId}`);
+      if (targetView) targetView.classList.remove('hidden');
+
       const activeBtn = document.getElementById(`tab-btn-${tabId}`);
       if (activeBtn) {
-        activeBtn.className = "px-3.5 py-1.5 rounded-lg font-medium transition-all bg-indigo-600 text-white shadow-sm shadow-indigo-500/25";
+        activeBtn.className = "px-3.5 py-2 rounded-md transition-colors bg-blue-600 text-white font-semibold";
       }
     }
 
     function openModal(id) {
-      document.getElementById(id).classList.remove('hidden');
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.remove('hidden');
     }
 
     function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.add('hidden');
     }
 
     function showToast(msg) {
       const toast = document.getElementById('toast');
       document.getElementById('toast-message').innerText = msg;
       toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 4000);
+      setTimeout(() => toast.classList.add('hidden'), 3500);
     }
 
     function copyToClipboard(text) {
       navigator.clipboard.writeText(text);
-      showToast('Copied ExternalId to clipboard!');
+      showToast('Copied ExternalId secret to clipboard');
     }
 
     function saveAWSAccount() {
       closeModal('aws-modal');
-      showToast('AWS Role ARN validated & saved with ExternalId protection!');
+      showToast('AWS Role ARN validated with ExternalId Confused Deputy protection');
     }
 
     function viewPRModal(id) {
@@ -557,23 +748,54 @@
       const row = document.getElementById(rowId);
       if (!row) return;
 
-      row.style.opacity = '0.5';
+      row.style.opacity = '0.6';
       row.innerHTML = `
-        <div class="p-6 flex items-center justify-between w-full bg-emerald-950/20 rounded-xl border border-emerald-500/30">
+        <div class="p-4 flex items-center justify-between w-full bg-slate-900/80 rounded border border-emerald-900/60">
           <div class="flex items-center gap-3">
-            <span class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">✓</span>
+            <span class="w-6 h-6 rounded bg-emerald-950 border border-emerald-800 text-emerald-400 flex items-center justify-center font-bold text-xs">✓</span>
             <div>
-              <div class="text-sm font-bold text-white">Pull Request Merged Successfully!</div>
-              <div class="text-xs text-slate-400">Terraform instance_class mutated and merged to main branch. Savings realized.</div>
+              <div class="text-xs font-semibold text-white">Pull Request Merged Successfully</div>
+              <div class="text-[11px] text-slate-400">Terraform instance spec mutated on main branch. StateGuard recorded execution lineage.</div>
             </div>
           </div>
-          <div class="text-sm font-mono font-bold text-emerald-400">+$$${monthlySavings.toFixed(2)}/mo Active</div>
+          <div class="text-xs font-mono font-semibold text-emerald-400">+$${monthlySavings.toFixed(2)}/mo Active Yield</div>
         </div>
       `;
 
       openPRs = Math.max(0, openPRs - 1);
-      document.getElementById('stat-open-prs').innerText = `${openPRs} Open`;
-      showToast(`Merged PR! Your monthly infrastructure cost is reduced by $${monthlySavings.toFixed(2)}.`);
+      document.getElementById('stat-open-prs').innerText = `${openPRs} Open PRs`;
+      showToast(`Merged PR. Recurring monthly infrastructure spend reduced by $${monthlySavings.toFixed(2)}.`);
+    }
+
+    function filterWorkloads(service) {
+      const items = document.querySelectorAll('.workload-item');
+      items.forEach(el => {
+        if (service === 'all' || el.getAttribute('data-service') === service) {
+          el.style.display = 'block';
+        } else {
+          el.style.display = 'none';
+        }
+      });
+
+      ['all', 'rds', 'ec2'].forEach(s => {
+        const btn = document.getElementById(`filter-${s}`);
+        if (btn) {
+          if (s === service) {
+            btn.className = "px-2.5 py-1 text-xs font-medium rounded bg-slate-800 text-white border border-slate-700";
+          } else {
+            btn.className = "px-2.5 py-1 text-xs font-medium rounded text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent";
+          }
+        }
+      });
+    }
+
+    function searchWorkloads() {
+      const term = document.getElementById('resource-search').value.toLowerCase();
+      const items = document.querySelectorAll('.workload-item');
+      items.forEach(el => {
+        const text = el.innerText.toLowerCase();
+        el.style.display = text.includes(term) ? 'block' : 'none';
+      });
     }
 
     async function triggerAutonomousScan() {
@@ -588,32 +810,31 @@
       btn.classList.add('opacity-50');
 
       const steps = [
-        { pct: '25%', text: 'Step 1/4: Ingesting 90-day CloudWatch batch telemetry across 128 instances...' },
-        { pct: '50%', text: 'Step 2/4: Executing Multi-Agent Swarm (FinOps, Arch, Security consensus)...' },
-        { pct: '75%', text: 'Step 3/4: StateGuard verifying Invariants & Drift Detector (Z ≤ 3.5)...' },
-        { pct: '100%', text: 'Step 4/4: Minting GitHub App tokens & opening multi-resource GitOps PRs...' },
+        { pct: '25%', text: 'Step 1/4: Querying 90-day CloudWatch telemetry across fleet instances...' },
+        { pct: '50%', text: 'Step 2/4: Swarm Orchestrator running FinOps, Arch, Security consensus debate...' },
+        { pct: '75%', text: 'Step 3/4: StateGuard verifying 13 invariants & Drift Detector (Z ≤ 3.5)...' },
+        { pct: '100%', text: 'Step 4/4: Generating Terraform HCL mutations and GitOps pull requests...' },
       ];
 
       for (let i = 0; i < steps.length; i++) {
         bar.style.width = steps[i].pct;
         percent.innerText = steps[i].pct;
         detail.innerText = steps[i].text;
-        await new Promise(r => setTimeout(r, 900));
+        await new Promise(r => setTimeout(r, 800));
       }
 
-      // Try hitting the backend API if available
       try {
         await fetch('/api/v1/scans/trigger', { method: 'POST' });
       } catch (e) {
-        // Fallback smooth UI completion
+        // Fallback for demo environments
       }
 
-      showToast('Scan Completed! Identified $1,104.00 in new monthly right-sizing opportunities.');
+      showToast('Scan Completed. Identified $1,104.00/mo in validated rightsizing opportunities.');
       setTimeout(() => {
         banner.classList.add('hidden');
         btn.disabled = false;
         btn.classList.remove('opacity-50');
-      }, 2500);
+      }, 2000);
     }
   </script>
 </body>
