@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CloudGuard FinOps — Enterprise Workspace Sign In</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --canvas: #F8FAFC;
+      --surface: #FFFFFF;
+      --border-subtle: #E2E8F0;
+      --border-strong: #CBD5E1;
+      --text-high: #0F172A;
+      --text-mid: #475569;
+      --text-low: #64748B;
+      --accent: #2563EB;
+      --accent-hover: #1D4ED8;
+    }
+    html.theme-dark {
+      --canvas: #09090B;
+      --surface: #141417;
+      --border-subtle: #27272A;
+      --border-strong: #3F3F46;
+      --text-high: #F4F4F5;
+      --text-mid: #A1A1AA;
+      --text-low: #71717A;
+      --accent: #3B82F6;
+      --accent-hover: #2563EB;
+    }
+    body {
+      background-color: var(--canvas);
+      color: var(--text-high);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .auth-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+    .font-mono-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+  </style>
+</head>
+<body class="p-4">
+
+  <!-- Main Auth Modal Card -->
+  <div class="auth-card w-full max-w-md p-6 sm:p-8 space-y-6">
+    
+    <!-- Branding Header -->
+    <div class="space-y-2 text-center">
+      <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-600 text-white font-bold text-sm tracking-wider mx-auto shadow-sm">
+        CG
+      </div>
+      <h1 class="text-xl font-bold tracking-tight" style="color: var(--text-high);">CloudGuard FinOps</h1>
+      <p class="text-xs" style="color: var(--text-low);">Autonomous Governed Cloud Optimization Console</p>
+    </div>
+
+    <!-- Mode Selector: Sign In vs Register -->
+    <div class="flex items-center rounded p-1 border" style="background-color: var(--canvas); border-color: var(--border-subtle);">
+      <button onclick="setAuthMode('login')" id="tab-login" class="flex-1 py-1.5 text-xs font-semibold rounded text-center transition-all bg-white shadow-sm" style="color: var(--text-high);">
+        Sign In
+      </button>
+      <button onclick="setAuthMode('register')" id="tab-register" class="flex-1 py-1.5 text-xs font-medium rounded text-center transition-all text-slate-500 hover:text-slate-900">
+        Create Tenant
+      </button>
+    </div>
+
+    <!-- Error Alert Banner -->
+    <div id="auth-error-box" class="hidden p-3 rounded text-xs border border-rose-200 bg-rose-50 text-rose-700 leading-relaxed font-mono">
+    </div>
+
+    <!-- Success Alert Banner -->
+    <div id="auth-success-box" class="hidden p-3 rounded text-xs border border-emerald-200 bg-emerald-50 text-emerald-700 leading-relaxed font-mono">
+    </div>
+
+    <!-- Auth Form -->
+    <form onsubmit="handleAuthSubmit(event)" class="space-y-4 text-xs">
+      
+      <!-- Tenant Name Field (Only in Register mode) -->
+      <div id="group-name" class="hidden space-y-1">
+        <label class="block font-medium" style="color: var(--text-mid);">Organization / Company Name</label>
+        <input type="text" id="input-name" placeholder="Acme Global Inc" class="w-full border rounded px-3 py-2 text-xs focus:outline-none focus:border-blue-600 transition-colors" style="background-color: var(--surface); border-color: var(--border-strong); color: var(--text-high);">
+      </div>
+
+      <!-- Email Field -->
+      <div class="space-y-1">
+        <label class="block font-medium" style="color: var(--text-mid);">Corporate Work Email</label>
+        <input type="email" id="input-email" required placeholder="devops@acme.com" class="w-full border rounded px-3 py-2 text-xs focus:outline-none focus:border-blue-600 transition-colors" style="background-color: var(--surface); border-color: var(--border-strong); color: var(--text-high);">
+      </div>
+
+      <!-- Password Field -->
+      <div class="space-y-1">
+        <div class="flex items-center justify-between">
+          <label class="block font-medium" style="color: var(--text-mid);">Password</label>
+          <span class="text-[11px]" style="color: var(--text-low);">(min 8 characters)</span>
+        </div>
+        <input type="password" id="input-password" required minlength="8" placeholder="••••••••••••" class="w-full border rounded px-3 py-2 text-xs focus:outline-none focus:border-blue-600 transition-colors" style="background-color: var(--surface); border-color: var(--border-strong); color: var(--text-high);">
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" id="btn-submit" class="w-full py-2.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors shadow-sm flex items-center justify-center gap-2">
+        <span id="btn-submit-text">Sign In to Console</span>
+      </button>
+
+    </form>
+
+    <!-- Footer Links & Demo Console Link -->
+    <div class="pt-2 border-t text-center space-y-2 text-xs" style="border-color: var(--border-subtle);">
+      <div>
+        <a href="/dashboard" class="text-blue-600 hover:underline font-medium">➔ Continue in Interactive Demo Mode</a>
+      </div>
+      <p class="text-[11px]" style="color: var(--text-low);">
+        Protected by StateGuard Invariant Architecture & Confused Deputy ExternalId Isolation.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Client-Side Auth Controller -->
+  <script>
+    let authMode = 'login';
+
+    function setAuthMode(mode) {
+      authMode = mode;
+      const tabLogin = document.getElementById('tab-login');
+      const tabRegister = document.getElementById('tab-register');
+      const groupName = document.getElementById('group-name');
+      const inputName = document.getElementById('input-name');
+      const btnText = document.getElementById('btn-submit-text');
+      const errorBox = document.getElementById('auth-error-box');
+      const successBox = document.getElementById('auth-success-box');
+
+      errorBox.classList.add('hidden');
+      successBox.classList.add('hidden');
+
+      if (mode === 'register') {
+        tabRegister.className = "flex-1 py-1.5 text-xs font-semibold rounded text-center transition-all bg-white shadow-sm text-slate-900";
+        tabLogin.className = "flex-1 py-1.5 text-xs font-medium rounded text-center transition-all text-slate-500 hover:text-slate-900";
+        groupName.classList.remove('hidden');
+        inputName.required = true;
+        btnText.innerText = "Create Enterprise Tenant";
+      } else {
+        tabLogin.className = "flex-1 py-1.5 text-xs font-semibold rounded text-center transition-all bg-white shadow-sm text-slate-900";
+        tabRegister.className = "flex-1 py-1.5 text-xs font-medium rounded text-center transition-all text-slate-500 hover:text-slate-900";
+        groupName.classList.add('hidden');
+        inputName.required = false;
+        btnText.innerText = "Sign In to Console";
+      }
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const errorBox = document.getElementById('auth-error-box');
+      const successBox = document.getElementById('auth-success-box');
+      const btn = document.getElementById('btn-submit');
+      const btnText = document.getElementById('btn-submit-text');
+
+      errorBox.classList.add('hidden');
+      successBox.classList.add('hidden');
+      btn.disabled = true;
+      btn.classList.add('opacity-75');
+
+      const email = document.getElementById('input-email').value.trim();
+      const password = document.getElementById('input-password').value;
+      const name = document.getElementById('input-name').value.trim();
+
+      const endpoint = authMode === 'register' ? '/api/v1/auth/register' : '/api/v1/auth/login';
+      const payload = authMode === 'register' ? { name, email, password } : { email, password };
+
+      try {
+        btnText.innerText = authMode === 'register' ? "Creating Tenant..." : "Authenticating...";
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.detail || "Authentication request failed");
+        }
+
+        // Store access credentials in localStorage
+        localStorage.setItem('cloudguard_token', data.access_token);
+        localStorage.setItem('cloudguard_customer_id', data.customer_id);
+        localStorage.setItem('cloudguard_email', data.email);
+        localStorage.setItem('cloudguard_external_id', data.external_id);
+        if (name) {
+          localStorage.setItem('cloudguard_name', name);
+        }
+
+        successBox.innerText = authMode === 'register' 
+          ? "Tenant created successfully! Redirecting to dashboard..." 
+          : "Authentication successful! Redirecting to dashboard...";
+        successBox.classList.remove('hidden');
+
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 800);
+
+      } catch (err) {
+        errorBox.innerText = err.message;
+        errorBox.classList.remove('hidden');
+        btn.disabled = false;
+        btn.classList.remove('opacity-75');
+        btnText.innerText = authMode === 'register' ? "Create Enterprise Tenant" : "Sign In to Console";
+      }
+    }
+
+    // Auto-detect theme from parent storage
+    if (localStorage.getItem('cloudguard-theme') === 'dark') {
+      document.documentElement.classList.add('theme-dark');
+    }
+  </script>
+</body>
+</html>

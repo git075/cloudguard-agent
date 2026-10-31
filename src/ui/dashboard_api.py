@@ -41,21 +41,33 @@ from fastapi.responses import HTMLResponse, Response
 from src.utils.metrics import get_prometheus_metrics_bytes, CONTENT_TYPE_LATEST
 from src.api.auth_router import router as auth_router
 from src.api.scan_router import router as scan_router
+from src.api.account_router import router as account_router
 
 # Include API Routers
 app.include_router(auth_router)
 app.include_router(scan_router)
+app.include_router(account_router)
 
 STATIC_INDEX_PATH = Path(__file__).parent / "static" / "index.html"
+STATIC_LOGIN_PATH = Path(__file__).parent / "static" / "login.html"
 
 
 @app.get("/", response_class=HTMLResponse)
 @app.get("/dashboard", response_class=HTMLResponse)
 def serve_dashboard():
-    """Serves the CloudGuard FinOps Executive Glassmorphism Dashboard."""
+    """Serves the CloudGuard FinOps Executive Dashboard."""
     if STATIC_INDEX_PATH.exists():
         return HTMLResponse(content=STATIC_INDEX_PATH.read_text(encoding="utf-8"))
     return HTMLResponse("<h2>CloudGuard Dashboard: static/index.html not found</h2>")
+
+
+@app.get("/login", response_class=HTMLResponse)
+@app.get("/register", response_class=HTMLResponse)
+def serve_login():
+    """Serves the CloudGuard FinOps Enterprise Login & Registration Console."""
+    if STATIC_LOGIN_PATH.exists():
+        return HTMLResponse(content=STATIC_LOGIN_PATH.read_text(encoding="utf-8"))
+    return HTMLResponse("<h2>CloudGuard Login: static/login.html not found</h2>")
 
 
 @app.get("/api/v1/health", status_code=status.HTTP_200_OK)

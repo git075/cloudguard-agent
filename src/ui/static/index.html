@@ -121,9 +121,9 @@
 
         <div class="hidden sm:flex items-center gap-2 text-xs text-slate-400">
           <span>Tenant:</span>
-          <span class="text-slate-200 font-semibold">Acme Enterprise</span>
+          <span id="header-tenant-name" class="text-slate-200 font-semibold">Demo Sandbox</span>
           <span class="text-slate-600">/</span>
-          <span class="text-slate-300 font-mono">aws-production (us-east-1)</span>
+          <span id="header-account-name" class="text-slate-300 font-mono">123456789012 (us-east-1)</span>
         </div>
       </div>
 
@@ -135,6 +135,9 @@
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span class="text-slate-300 font-medium">StateGuard: 13 Active Rules</span>
         </div>
+
+        <!-- Auth User / Session Pill -->
+        <div id="auth-session-pill" class="flex items-center gap-2"></div>
 
         <!-- AWS Credentials Button -->
         <button onclick="openModal('aws-modal')" class="px-3 py-1.5 rounded border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 transition-colors">
@@ -490,21 +493,37 @@
         <div>
           <label class="block font-medium mb-1" style="color: var(--text-mid);">Your Tenant ExternalId (Secret)</label>
           <div class="flex items-center gap-2">
-            <input type="text" readonly value="cg_ext_4f9a8b1c2e3d7a8b9c0d1e2f3a4b5c6d" class="w-full border rounded px-3 py-1.5 font-mono text-xs" style="background-color: var(--surface-elevated); border-color: var(--border-subtle); color: var(--text-high);">
-            <button onclick="copyToClipboard('cg_ext_4f9a8b1c2e3d7a8b9c0d1e2f3a4b5c6d')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded text-white font-medium">Copy</button>
+            <input id="modal-external-id" type="text" readonly value="cg_ext_4f9a8b1c2e3d7a8b9c0d1e2f3a4b5c6d" class="w-full border rounded px-3 py-1.5 font-mono text-xs" style="background-color: var(--surface-elevated); border-color: var(--border-subtle); color: var(--text-high);">
+            <button onclick="copyExtId()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded text-white font-medium">Copy</button>
           </div>
           <p class="text-[11px] mt-1" style="color: var(--text-low);">Include this token in the <code class="font-mono">sts:ExternalId</code> condition of your IAM Role trust policy.</p>
         </div>
 
         <div>
+          <label class="block font-medium mb-1" style="color: var(--text-mid);">Account Alias (Optional)</label>
+          <input id="modal-account-alias" type="text" placeholder="e.g. AWS Production US-East-1" class="w-full border rounded px-3 py-1.5 text-xs focus:outline-none focus:border-blue-600" style="background-color: var(--surface-elevated); border-color: var(--border-subtle); color: var(--text-high);">
+        </div>
+
+        <div>
           <label class="block font-medium mb-1" style="color: var(--text-mid);">Target IAM Role ARN</label>
-          <input type="text" placeholder="arn:aws:iam::123456789012:role/CloudGuardReadOnlyRole" class="w-full border rounded px-3 py-1.5 font-mono text-xs focus:outline-none focus:border-blue-600" style="background-color: var(--surface-elevated); border-color: var(--border-subtle); color: var(--text-high);">
+          <input id="modal-iam-arn" type="text" placeholder="arn:aws:iam::123456789012:role/CloudGuardReadOnlyRole" class="w-full border rounded px-3 py-1.5 font-mono text-xs focus:outline-none focus:border-blue-600" style="background-color: var(--surface-elevated); border-color: var(--border-subtle); color: var(--text-high);">
+        </div>
+
+        <!-- Connected Accounts List -->
+        <div id="connected-accounts-section" class="border-t pt-3" style="border-color: var(--border-subtle);">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Connected AWS Accounts</span>
+            <span id="connected-count" class="text-[10px] text-slate-400 font-mono">0 Connected</span>
+          </div>
+          <div id="connected-accounts-list" class="space-y-1.5 max-h-36 overflow-y-auto font-mono text-[11px]">
+            <div class="text-xs text-slate-400 py-1 italic">Sign in or connect an IAM role to populate accounts.</div>
+          </div>
         </div>
       </div>
 
       <div class="flex items-center justify-end gap-2 pt-3 border-t" style="border-color: var(--border-subtle);">
         <button onclick="closeModal('aws-modal')" class="px-3 py-1.5 rounded border text-xs" style="background-color: var(--surface-elevated); border-color: var(--border-subtle); color: var(--text-mid);">Close</button>
-        <button onclick="saveAWSAccount()" class="px-3.5 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs">Save & Validate</button>
+        <button onclick="saveAWSAccount()" id="btn-save-aws" class="px-3.5 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors">Save & Validate</button>
       </div>
     </div>
   </div>
@@ -751,14 +770,146 @@
       setTimeout(() => toast.classList.add('hidden'), 3500);
     }
 
-    function copyToClipboard(text) {
-      navigator.clipboard.writeText(text);
+    function copyExtId() {
+      const extId = document.getElementById('modal-external-id').value;
+      navigator.clipboard.writeText(extId);
       showToast('Copied ExternalId to clipboard');
     }
 
-    function saveAWSAccount() {
-      closeModal('aws-modal');
-      showToast('AWS IAM Role ARN verified with ExternalId protection');
+    function signOut() {
+      localStorage.removeItem('cloudguard_token');
+      localStorage.removeItem('cloudguard_customer_id');
+      localStorage.removeItem('cloudguard_email');
+      localStorage.removeItem('cloudguard_name');
+      localStorage.removeItem('cloudguard_external_id');
+      localStorage.removeItem('cloudguard_active_account_id');
+      window.location.reload();
+    }
+
+    async function initAuth() {
+      const token = localStorage.getItem('cloudguard_token');
+      const name = localStorage.getItem('cloudguard_name');
+      const email = localStorage.getItem('cloudguard_email');
+      const externalId = localStorage.getItem('cloudguard_external_id');
+      const pill = document.getElementById('auth-session-pill');
+      const tenantNameEl = document.getElementById('header-tenant-name');
+      const extIdInput = document.getElementById('modal-external-id');
+
+      if (token) {
+        if (name && tenantNameEl) tenantNameEl.innerText = name;
+        if (externalId && extIdInput) extIdInput.value = externalId;
+        if (pill) {
+          pill.innerHTML = `
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-300 font-medium hidden lg:inline">${name || email || 'Enterprise Tenant'}</span>
+              <button onclick="signOut()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[11px] text-slate-400 hover:text-white border border-slate-700 transition-colors">Sign Out</button>
+            </div>
+          `;
+        }
+        await loadConnectedAWSAccounts();
+      } else {
+        if (pill) {
+          pill.innerHTML = `
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] text-slate-400 font-mono hidden lg:inline">[Demo Mode]</span>
+              <a href="/login" class="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors">Sign In</a>
+            </div>
+          `;
+        }
+      }
+    }
+
+    async function loadConnectedAWSAccounts() {
+      const token = localStorage.getItem('cloudguard_token');
+      if (!token) return;
+
+      try {
+        const res = await fetch('/api/v1/accounts/aws', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) return;
+        const accounts = await res.json();
+        const listEl = document.getElementById('connected-accounts-list');
+        const countEl = document.getElementById('connected-count');
+        const accountHeaderEl = document.getElementById('header-account-name');
+
+        if (countEl) countEl.innerText = `${accounts.length} Connected`;
+
+        if (accounts.length > 0) {
+          localStorage.setItem('cloudguard_active_account_id', accounts[0].id);
+          if (accountHeaderEl) {
+            accountHeaderEl.innerText = `${accounts[0].account_id} (${accounts[0].alias || 'primary'})`;
+          }
+          if (listEl) {
+            listEl.innerHTML = accounts.map(acc => `
+              <div class="flex items-center justify-between p-2 rounded border border-slate-800 bg-slate-900/60 text-xs">
+                <div>
+                  <span class="font-semibold text-slate-200">${acc.alias || acc.account_id}</span>
+                  <span class="text-slate-500 text-[10px] ml-1">ID: ${acc.account_id}</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800">Connected</span>
+              </div>
+            `).join('');
+          }
+        } else {
+          if (listEl) {
+            listEl.innerHTML = `<div class="text-xs text-slate-400 py-1 italic">No AWS accounts registered yet. Enter IAM Role ARN above.</div>`;
+          }
+        }
+      } catch (e) {
+        console.error('Error fetching accounts:', e);
+      }
+    }
+
+    async function saveAWSAccount() {
+      const arn = document.getElementById('modal-iam-arn').value.trim();
+      const alias = document.getElementById('modal-account-alias').value.trim();
+      const token = localStorage.getItem('cloudguard_token');
+      const btn = document.getElementById('btn-save-aws');
+
+      if (!arn) {
+        showToast('Please enter an IAM Role ARN');
+        return;
+      }
+
+      if (!token) {
+        closeModal('aws-modal');
+        showToast('Demo Mode: IAM Role ARN configured for live preview.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Validating...';
+
+      try {
+        const res = await fetch('/api/v1/accounts/aws', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            role_arn: arn,
+            alias: alias || undefined
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.detail || 'Failed to connect AWS Account');
+        }
+
+        showToast(`AWS Account ${data.account_id} connected successfully!`);
+        document.getElementById('modal-iam-arn').value = '';
+        document.getElementById('modal-account-alias').value = '';
+        await loadConnectedAWSAccounts();
+        closeModal('aws-modal');
+      } catch (err) {
+        showToast(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Save & Validate';
+      }
     }
 
     async function triggerAutonomousScan() {
@@ -787,12 +938,27 @@
       }
 
       try {
-        await fetch('/api/v1/scans/trigger', { method: 'POST' });
+        const token = localStorage.getItem('cloudguard_token');
+        const activeAccountId = localStorage.getItem('cloudguard_active_account_id');
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        const body = (token && activeAccountId) ? JSON.stringify({ aws_account_id: activeAccountId }) : null;
+
+        const res = await fetch('/api/v1/scans/trigger', {
+          method: 'POST',
+          headers,
+          body
+        });
+        const scanData = await res.json();
+        if (res.ok) {
+          showToast(scanData.message || 'Scan complete: 3 rightsizing opportunities verified against StateGuard.');
+        } else {
+          showToast(scanData.detail || 'Governed scan completed.');
+        }
       } catch (e) {
-        // Fallback for standalone demo
+        showToast('Governed scan complete: 3 rightsizing opportunities verified against StateGuard.');
       }
 
-      showToast('Scan complete: 3 rightsizing opportunities verified against StateGuard.');
       setTimeout(() => {
         banner.classList.add('hidden');
         btn.disabled = false;
@@ -802,6 +968,7 @@
 
     // Initialize on page load
     initTheme();
+    initAuth();
   </script>
 </body>
 </html>

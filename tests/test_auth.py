@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sess
 from src.models.db import Base, Customer
 from src.db.session import get_async_db
 from src.api.auth_router import router as auth_router
+from src.api.account_router import router as account_router
 from src.services.auth import (
     create_access_token,
     decode_access_token,
@@ -21,6 +22,7 @@ from src.services.auth import (
 # Set up test FastAPI app
 app = FastAPI()
 app.include_router(auth_router)
+app.include_router(account_router)
 
 
 @pytest.fixture
@@ -135,3 +137,69 @@ async def test_fastapi_auth_register_login_flow(async_test_session: AsyncSession
 
     # Clear dependency overrides
     app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_fastapi_aws_account_connect_and_list(async_test_session: AsyncSession):
+    """Test connecting AWS accounts, validating IAM Role ARNs, and listing tenant accounts."""
+    async def override_get_db():
+        yield async_test_session
+
+    app.dependency_overrides[get_async_db] = override_get_db
+    client = TestClient(app)
+
+    # Register customer
+    reg_res = client.post(
+        "/api/v1/auth/register",
+        json={
+            "name": "Stark Industries",
+            "email": "tony@stark.com",
+            "password": "IronManPassword2026!",
+        },
+    )
+    assert reg_res.status_code == 201
+    token = reg_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # 1. Reject invalid IAM Role ARN format
+    bad_arn_res = client.post(
+        "/api/v1/accounts/aws",
+        headers=headers,
+        json={"role_arn": "not-an-arn"},
+    )
+    assert bad_arn_res.status_code == 400
+    assert "Invalid IAM Role ARN" in bad_arn_res.json()["detail"]
+
+    # 2. Connect valid AWS IAM Role ARN
+    valid_arn = "arn:aws:iam::123456789012:role/CloudGuardReadOnlyRole"
+    conn_res = client.post(
+        "/api/v1/accounts/aws",
+        headers=headers,
+        json={"role_arn": valid_arn, "alias": "Stark Production US-East"},
+    )
+    assert conn_res.status_code == 201
+    conn_data = conn_res.json()
+    assert conn_data["account_id"] == "123456789012"
+    assert conn_data["role_arn"] == valid_arn
+    assert conn_data["alias"] == "Stark Production US-East"
+    assert conn_data["is_active"] is True
+
+    # 3. List connected accounts
+    list_res = client.get("/api/v1/accounts/aws", headers=headers)
+    assert list_res.status_code == 200
+    accounts = list_res.json()
+    assert len(accounts) == 1
+    assert accounts[0]["account_id"] == "123456789012"
+
+    # 4. Connect same account again (idempotent, returns existing)
+    dup_res = client.post(
+        "/api/v1/accounts/aws",
+        headers=headers,
+        json={"role_arn": valid_arn, "alias": "Stark Production US-East"},
+    )
+    assert dup_res.status_code == 201
+    assert dup_res.json()["id"] == conn_data["id"]
+
+    # Clear dependency overrides
+    app.dependency_overrides.clear()
+
