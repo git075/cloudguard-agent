@@ -6,23 +6,54 @@
   <title>CloudGuard FinOps — Enterprise Infrastructure Governance</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
+    /* Enterprise Theme: Clean Corporate Console (AWS & Stripe Standard) */
     :root {
-      --canvas: #0E131F;
-      --surface: #151C2C;
-      --surface-elevated: #1C2538;
-      --surface-subtle: #121927;
-      --border-subtle: #243046;
-      --border-strong: #33435F;
-      --primary: #2563EB;
-      --primary-hover: #1D4ED8;
-      --text-high: #F8FAFC;
-      --text-mid: #94A3B8;
+      --canvas: #F8FAFC;
+      --header-bg: #0F172A;
+      --header-border: #1E293B;
+      --surface: #FFFFFF;
+      --surface-elevated: #F1F5F9;
+      --surface-subtle: #F8FAFC;
+      --border-subtle: #E2E8F0;
+      --border-strong: #CBD5E1;
+      --text-high: #0F172A;
+      --text-mid: #475569;
       --text-low: #64748B;
+      --code-bg: #0F172A;
+      --code-text: #E2E8F0;
+      --gain: #059669;
+      --gain-bg: #ECFDF5;
+      --gain-border: #A7F3D0;
+      --accent: #2563EB;
+      --accent-hover: #1D4ED8;
+      --active-border: #2563EB;
+      --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Enterprise Neutral Charcoal Theme (Datadog & Linear Standard - Zero Navy Blue) */
+    html.theme-dark {
+      --canvas: #09090B;
+      --header-bg: #121215;
+      --header-border: #27272A;
+      --surface: #141417;
+      --surface-elevated: #1F1F23;
+      --surface-subtle: #18181B;
+      --border-subtle: #27272A;
+      --border-strong: #3F3F46;
+      --text-high: #F4F4F5;
+      --text-mid: #A1A1AA;
+      --text-low: #71717A;
+      --code-bg: #050507;
+      --code-text: #E4E4E7;
       --gain: #10B981;
       --gain-bg: #064E3B;
-      --loss: #F43F5E;
-      --loss-bg: #881337;
+      --gain-border: #065F46;
+      --accent: #3B82F6;
+      --accent-hover: #2563EB;
+      --active-border: #3B82F6;
+      --card-shadow: none;
     }
+
     body {
       background-color: var(--canvas);
       color: var(--text-high);
@@ -31,22 +62,31 @@
       padding: 0;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      transition: background-color 0.15s ease, color 0.15s ease;
     }
-    .font-mono-code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    }
-    .surface-panel {
+
+    .enterprise-panel {
       background-color: var(--surface);
       border: 1px solid var(--border-subtle);
       border-radius: 6px;
+      box-shadow: var(--card-shadow);
+      transition: border-color 0.15s ease, background-color 0.15s ease;
     }
-    .surface-panel:hover {
+
+    .enterprise-panel:hover {
       border-color: var(--border-strong);
     }
+
     .active-candidate {
       background-color: var(--surface-elevated) !important;
-      border-color: #3B82F6 !important;
+      border-color: var(--active-border) !important;
+      box-shadow: 0 0 0 1px var(--active-border);
     }
+
+    .font-mono-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
     /* Clean custom scrollbar */
     ::-webkit-scrollbar {
       width: 5px;
@@ -56,58 +96,66 @@
       background: var(--canvas);
     }
     ::-webkit-scrollbar-thumb {
-      background: #2A3850;
-      border-radius: 2px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #3B4D6B;
+      background: var(--border-strong);
+      border-radius: 3px;
     }
   </style>
 </head>
-<body class="bg-[#0E131F] text-slate-100 antialiased selection:bg-blue-600 selection:text-white">
+<body class="antialiased selection:bg-blue-600 selection:text-white">
 
-  <!-- Top System Ribbon -->
-  <header class="border-b border-slate-800 bg-[#121826] sticky top-0 z-30">
+  <!-- Enterprise Top Navigation Bar -->
+  <header style="background-color: var(--header-bg); border-color: var(--header-border);" class="border-b sticky top-0 z-30 text-white">
     <div class="max-w-[1440px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
       
-      <!-- Brand & Organization Context -->
+      <!-- Organization & Platform Context -->
       <div class="flex items-center gap-4">
         <div class="flex items-center gap-2.5">
-          <div class="w-7 h-7 rounded bg-blue-600 flex items-center justify-center font-bold text-white text-sm">
+          <div class="w-7 h-7 rounded bg-blue-600 flex items-center justify-center font-bold text-white text-xs tracking-wider">
             CG
           </div>
-          <span class="font-semibold text-white tracking-tight text-sm">CloudGuard</span>
-          <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono">FinOps</span>
+          <span class="font-bold tracking-tight text-sm text-white">CloudGuard</span>
+          <span class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono">FinOps Console</span>
         </div>
 
         <div class="h-4 w-px bg-slate-700 hidden sm:block"></div>
 
         <div class="hidden sm:flex items-center gap-2 text-xs text-slate-400">
-          <span>Organization:</span>
-          <span class="text-slate-200 font-medium">Acme Enterprise</span>
+          <span>Tenant:</span>
+          <span class="text-slate-200 font-semibold">Acme Enterprise</span>
           <span class="text-slate-600">/</span>
-          <span class="text-slate-200 font-mono">aws-prod (us-east-1)</span>
+          <span class="text-slate-300 font-mono">aws-production (us-east-1)</span>
         </div>
       </div>
 
-      <!-- Live Engine Controls -->
+      <!-- Actions & Theme Toggle -->
       <div class="flex items-center gap-3">
-        <div class="hidden md:flex items-center gap-2 text-xs font-mono text-slate-400 mr-2">
-          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span>StateGuard Invariants: 13 Active</span>
+        
+        <!-- Live Invariant Health Status -->
+        <div class="hidden md:flex items-center gap-2 text-xs font-mono text-slate-400 mr-1">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-slate-300 font-medium">StateGuard: 13 Active Rules</span>
         </div>
 
+        <!-- AWS Credentials Button -->
         <button onclick="openModal('aws-modal')" class="px-3 py-1.5 rounded border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 transition-colors">
-          AWS Credentials
+          AWS Access
         </button>
 
-        <button onclick="triggerAutonomousScan()" id="btn-scan" class="px-3.5 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors flex items-center gap-2">
+        <!-- Theme Toggle: Corporate Console / Neutral Charcoal -->
+        <button onclick="toggleEnterpriseTheme()" id="theme-toggle-btn" class="px-2.5 py-1.5 rounded border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition-colors flex items-center gap-1.5" title="Switch between Corporate Console and Neutral Charcoal">
+          <span id="theme-toggle-icon">🌙</span>
+          <span id="theme-toggle-label" class="hidden sm:inline">Dark</span>
+        </button>
+
+        <!-- Primary Scan Action -->
+        <button onclick="triggerAutonomousScan()" id="btn-scan" class="px-3.5 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors flex items-center gap-2 shadow-sm">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span id="btn-scan-text">Run Optimization Scan</span>
+          <span id="btn-scan-text">Run Scan</span>
         </button>
+
       </div>
 
     </div>
@@ -117,239 +165,239 @@
   <main class="max-w-[1440px] mx-auto px-4 sm:px-6 py-6 space-y-6">
 
     <!-- Active Scanning Progress Banner (Console Stream) -->
-    <div id="scan-progress-banner" class="hidden surface-panel p-4 border-blue-500/50 bg-[#151C2C]">
+    <div id="scan-progress-banner" class="hidden enterprise-panel p-4 border-blue-500/50">
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center gap-3">
-          <div class="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+          <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
           <div>
-            <div class="text-xs font-semibold text-white">Distributed Scan Pipeline Running</div>
-            <div id="scan-status-detail" class="text-xs text-slate-400 font-mono mt-0.5">Fetching 90-day CloudWatch telemetry across cluster instances...</div>
+            <div class="text-xs font-semibold" style="color: var(--text-high);">Distributed Celery Scan Running</div>
+            <div id="scan-status-detail" class="text-xs font-mono mt-0.5" style="color: var(--text-low);">Fetching 90-day CloudWatch telemetry across cluster instances...</div>
           </div>
         </div>
-        <span id="scan-percent" class="text-xs font-mono font-bold text-blue-400">25%</span>
+        <span id="scan-percent" class="text-xs font-mono font-bold text-blue-600">25%</span>
       </div>
-      <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+      <div class="w-full h-1.5 rounded-full overflow-hidden" style="background-color: var(--border-subtle);">
         <div id="scan-progress-bar" class="h-full bg-blue-600 transition-all duration-500" style="width: 25%"></div>
       </div>
     </div>
 
-    <!-- Fiscal & Operational Summary Strip -->
-    <section class="grid grid-cols-1 md:grid-cols-4 gap-3">
+    <!-- Fiscal & Operational KPI Cards -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       
-      <div class="surface-panel p-4">
-        <div class="text-xs text-slate-400 mb-1">Identified Monthly Reduction</div>
-        <div class="text-2xl font-bold font-mono text-emerald-400" id="stat-monthly">-$2,041.67<span class="text-xs font-normal text-slate-400"> / mo</span></div>
-        <div class="text-[11px] text-slate-400 mt-1 font-mono">Annualized: <span class="text-slate-200" id="stat-annualized">$24,500.00 / yr</span></div>
+      <div class="enterprise-panel p-4">
+        <div class="text-xs font-medium uppercase tracking-wider mb-1" style="color: var(--text-low);">Monthly Cost Reduction</div>
+        <div class="text-2xl font-bold font-mono tracking-tight" style="color: var(--gain);" id="stat-monthly">-$2,041.67<span class="text-xs font-normal" style="color: var(--text-low);"> / mo</span></div>
+        <div class="text-[11px] font-mono mt-1" style="color: var(--text-low);">Annualized: <strong style="color: var(--text-high);" id="stat-annualized">$24,500.00 / yr</strong></div>
       </div>
 
-      <div class="surface-panel p-4">
-        <div class="text-xs text-slate-400 mb-1">Fleet Sizing Efficiency</div>
-        <div class="text-2xl font-bold font-mono text-white">94.2%</div>
-        <div class="text-[11px] text-slate-400 mt-1 font-mono">128 instances evaluated across RDS & EC2</div>
+      <div class="enterprise-panel p-4">
+        <div class="text-xs font-medium uppercase tracking-wider mb-1" style="color: var(--text-low);">Fleet Sizing Efficiency</div>
+        <div class="text-2xl font-bold font-mono tracking-tight" style="color: var(--text-high);">94.2%</div>
+        <div class="text-[11px] font-mono mt-1" style="color: var(--text-low);">128 instances evaluated across RDS & EC2</div>
       </div>
 
-      <div class="surface-panel p-4">
-        <div class="text-xs text-slate-400 mb-1">Pending GitOps Mutations</div>
-        <div class="text-2xl font-bold font-mono text-white" id="stat-open-prs">3 Proposals</div>
-        <div class="text-[11px] text-slate-400 mt-1 font-mono">Verified HCL diffs awaiting deployment</div>
+      <div class="enterprise-panel p-4">
+        <div class="text-xs font-medium uppercase tracking-wider mb-1" style="color: var(--text-low);">Pending GitOps Mutations</div>
+        <div class="text-2xl font-bold font-mono tracking-tight" style="color: var(--text-high);" id="stat-open-prs">3 Proposals</div>
+        <div class="text-[11px] font-mono mt-1" style="color: var(--text-low);">Verified HCL diffs awaiting deployment</div>
       </div>
 
-      <div class="surface-panel p-4">
-        <div class="text-xs text-slate-400 mb-1">StateGuard Invariant Safety</div>
-        <div class="text-2xl font-bold font-mono text-emerald-400">100% Passed</div>
-        <div class="text-[11px] text-slate-400 mt-1 font-mono">0 regressions • 4 unsafe proposals rejected</div>
+      <div class="enterprise-panel p-4">
+        <div class="text-xs font-medium uppercase tracking-wider mb-1" style="color: var(--text-low);">StateGuard Invariant Safety</div>
+        <div class="text-2xl font-bold font-mono tracking-tight" style="color: var(--gain);">100% Passed</div>
+        <div class="text-[11px] font-mono mt-1" style="color: var(--text-low);">0 regressions • 4 unsafe proposals rejected</div>
       </div>
 
     </section>
 
-    <!-- Split Workbench: Workload Queue (Left) & Inspector Terminal (Right) -->
+    <!-- Split Workbench: Candidate Workloads (Left) & Inspector (Right) -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
       
-      <!-- Left Column: Workload Candidate Queue (5 cols) -->
+      <!-- Left Column: Workload Queue (5 cols) -->
       <section class="lg:col-span-5 space-y-3">
         
-        <!-- Queue Header & Filter -->
+        <!-- Queue Filter Toolbar -->
         <div class="flex items-center justify-between pb-1">
-          <h2 class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Candidate Workloads (3)</h2>
+          <h2 class="text-xs font-semibold uppercase tracking-wider" style="color: var(--text-mid);">Candidate Workloads (3)</h2>
           <div class="flex items-center gap-1.5 text-xs">
-            <button onclick="filterQueue('all')" id="btn-filter-all" class="px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-medium">All</button>
-            <button onclick="filterQueue('rds')" id="btn-filter-rds" class="px-2 py-0.5 rounded text-slate-400 hover:text-slate-200 font-medium">RDS</button>
-            <button onclick="filterQueue('ec2')" id="btn-filter-ec2" class="px-2 py-0.5 rounded text-slate-400 hover:text-slate-200 font-medium">EC2</button>
+            <button onclick="filterQueue('all')" id="btn-filter-all" class="px-2.5 py-0.5 rounded font-medium border" style="background-color: var(--surface-elevated); border-color: var(--border-strong); color: var(--text-high);">All</button>
+            <button onclick="filterQueue('rds')" id="btn-filter-rds" class="px-2.5 py-0.5 rounded font-medium border border-transparent" style="color: var(--text-mid);">RDS</button>
+            <button onclick="filterQueue('ec2')" id="btn-filter-ec2" class="px-2.5 py-0.5 rounded font-medium border border-transparent" style="color: var(--text-mid);">EC2</button>
           </div>
         </div>
 
         <!-- Candidate 1: Production DB (Default Selected) -->
-        <div onclick="selectCandidate('production_db')" id="card-production_db" class="surface-panel active-candidate p-4 cursor-pointer transition-colors space-y-2.5 candidate-card" data-service="rds">
+        <div onclick="selectCandidate('production_db')" id="card-production_db" class="enterprise-panel active-candidate p-4 cursor-pointer transition-all space-y-2.5 candidate-card" data-service="rds">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-              <span class="font-mono text-xs font-semibold text-white">production_db</span>
-              <span class="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono">RDS</span>
+              <span class="w-2 h-2 rounded-full" style="background-color: var(--gain);"></span>
+              <span class="font-mono text-xs font-bold" style="color: var(--text-high);">production_db</span>
+              <span class="text-[10px] px-1.5 py-0.2 rounded font-mono border" style="background-color: var(--surface-subtle); border-color: var(--border-subtle); color: var(--text-mid);">RDS</span>
             </div>
-            <span class="font-mono text-xs font-bold text-emerald-400" id="card-production_db-savings">-$1,104.00/mo</span>
+            <span class="font-mono text-xs font-bold" style="color: var(--gain);" id="card-production_db-savings">-$1,104.00/mo</span>
           </div>
 
-          <div class="text-xs font-mono text-slate-300 flex items-center gap-2">
-            <span class="text-slate-400">db.r5.2xlarge</span>
-            <span class="text-slate-500">➔</span>
-            <span class="text-emerald-400 font-medium">db.r6g.xlarge</span>
-            <span class="text-slate-500 text-[11px]">(-78.8%)</span>
+          <div class="text-xs font-mono flex items-center gap-2" style="color: var(--text-mid);">
+            <span style="color: var(--text-low); text-decoration: line-through;">db.r5.2xlarge</span>
+            <span>➔</span>
+            <span class="font-semibold" style="color: var(--gain);">db.r6g.xlarge</span>
+            <span class="text-[11px]" style="color: var(--text-low);">(-78.8%)</span>
           </div>
 
-          <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-800">
+          <div class="flex items-center justify-between text-[11px] font-mono pt-1.5 border-t" style="border-color: var(--border-subtle); color: var(--text-low);">
             <span>Peak CPU: 42.5%</span>
             <span>Free RAM: 43.0 GB</span>
-            <span class="text-emerald-400">Invariants OK</span>
+            <span style="color: var(--gain); font-weight: 500;">Invariants OK</span>
           </div>
         </div>
 
         <!-- Candidate 2: Analytics Warehouse -->
-        <div onclick="selectCandidate('analytics_warehouse')" id="card-analytics_warehouse" class="surface-panel p-4 cursor-pointer transition-colors space-y-2.5 candidate-card" data-service="rds">
+        <div onclick="selectCandidate('analytics_warehouse')" id="card-analytics_warehouse" class="enterprise-panel p-4 cursor-pointer transition-all space-y-2.5 candidate-card" data-service="rds">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-              <span class="font-mono text-xs font-semibold text-white">analytics_warehouse</span>
-              <span class="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono">RDS</span>
+              <span class="w-2 h-2 rounded-full" style="background-color: var(--gain);"></span>
+              <span class="font-mono text-xs font-bold" style="color: var(--text-high);">analytics_warehouse</span>
+              <span class="text-[10px] px-1.5 py-0.2 rounded font-mono border" style="background-color: var(--surface-subtle); border-color: var(--border-subtle); color: var(--text-mid);">RDS</span>
             </div>
-            <span class="font-mono text-xs font-bold text-emerald-400" id="card-analytics_warehouse-savings">-$450.00/mo</span>
+            <span class="font-mono text-xs font-bold" style="color: var(--gain);" id="card-analytics_warehouse-savings">-$450.00/mo</span>
           </div>
 
-          <div class="text-xs font-mono text-slate-300 flex items-center gap-2">
-            <span class="text-slate-400">db.r5.xlarge</span>
-            <span class="text-slate-500">➔</span>
-            <span class="text-emerald-400 font-medium">db.m6g.xlarge</span>
-            <span class="text-slate-500 text-[11px]">(-64.3%)</span>
+          <div class="text-xs font-mono flex items-center gap-2" style="color: var(--text-mid);">
+            <span style="color: var(--text-low); text-decoration: line-through;">db.r5.xlarge</span>
+            <span>➔</span>
+            <span class="font-semibold" style="color: var(--gain);">db.m6g.xlarge</span>
+            <span class="text-[11px]" style="color: var(--text-low);">(-64.3%)</span>
           </div>
 
-          <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-800">
+          <div class="flex items-center justify-between text-[11px] font-mono pt-1.5 border-t" style="border-color: var(--border-subtle); color: var(--text-low);">
             <span>Peak CPU: 31.0%</span>
             <span>Free RAM: 22.4 GB</span>
-            <span class="text-emerald-400">Invariants OK</span>
+            <span style="color: var(--gain); font-weight: 500;">Invariants OK</span>
           </div>
         </div>
 
         <!-- Candidate 3: API Gateway Cluster -->
-        <div onclick="selectCandidate('api_gateway')" id="card-api_gateway" class="surface-panel p-4 cursor-pointer transition-colors space-y-2.5 candidate-card" data-service="ec2">
+        <div onclick="selectCandidate('api_gateway')" id="card-api_gateway" class="enterprise-panel p-4 cursor-pointer transition-all space-y-2.5 candidate-card" data-service="ec2">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-              <span class="font-mono text-xs font-semibold text-white">api_gateway_cluster</span>
-              <span class="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono">EC2</span>
+              <span class="w-2 h-2 rounded-full" style="background-color: var(--gain);"></span>
+              <span class="font-mono text-xs font-bold" style="color: var(--text-high);">api_gateway_cluster</span>
+              <span class="text-[10px] px-1.5 py-0.2 rounded font-mono border" style="background-color: var(--surface-subtle); border-color: var(--border-subtle); color: var(--text-mid);">EC2</span>
             </div>
-            <span class="font-mono text-xs font-bold text-emerald-400" id="card-api_gateway-savings">-$180.00/mo</span>
+            <span class="font-mono text-xs font-bold" style="color: var(--gain);" id="card-api_gateway-savings">-$180.00/mo</span>
           </div>
 
-          <div class="text-xs font-mono text-slate-300 flex items-center gap-2">
-            <span class="text-slate-400">m5.xlarge</span>
-            <span class="text-slate-500">➔</span>
-            <span class="text-emerald-400 font-medium">t4g.large</span>
-            <span class="text-slate-500 text-[11px]">(-51.4%)</span>
+          <div class="text-xs font-mono flex items-center gap-2" style="color: var(--text-mid);">
+            <span style="color: var(--text-low); text-decoration: line-through;">m5.xlarge</span>
+            <span>➔</span>
+            <span class="font-semibold" style="color: var(--gain);">t4g.large</span>
+            <span class="text-[11px]" style="color: var(--text-low);">(-51.4%)</span>
           </div>
 
-          <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-800">
+          <div class="flex items-center justify-between text-[11px] font-mono pt-1.5 border-t" style="border-color: var(--border-subtle); color: var(--text-low);">
             <span>Avg CPU: 14.0%</span>
             <span>IOPS: 620</span>
-            <span class="text-emerald-400">Invariants OK</span>
+            <span style="color: var(--gain); font-weight: 500;">Invariants OK</span>
           </div>
         </div>
 
-        <!-- System Guard Note -->
-        <div class="p-3 rounded bg-slate-900 border border-slate-800 text-xs text-slate-400 leading-relaxed font-mono">
-          <span class="text-slate-300 font-semibold">StateGuard Safety Floor:</span>
-          All proposed downsizes are checked against 90-day CloudWatch metrics. A 1.25x RAM buffer is strictly required. Any candidate with OOM risk is rejected before PR generation.
+        <!-- System Governance Safety Card -->
+        <div class="p-3.5 rounded border text-xs leading-relaxed font-mono" style="background-color: var(--surface-subtle); border-color: var(--border-subtle); color: var(--text-mid);">
+          <strong style="color: var(--text-high);">StateGuard Safety Policy:</strong>
+          All candidates are evaluated against 90-day CloudWatch metrics. A 1.25x RAM safety floor is enforced. Candidates risking OOM or latency regressions are strictly vetoed.
         </div>
 
       </section>
 
       <!-- Right Column: Inspector & Execution Workbench (7 cols) -->
-      <section class="lg:col-span-7 surface-panel p-5 space-y-5">
+      <section class="lg:col-span-7 enterprise-panel p-5 space-y-5">
         
         <!-- Inspector Title & Dynamic Action Bar -->
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-slate-800 gap-3">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b gap-3" style="border-color: var(--border-subtle);">
           <div>
             <div class="flex items-center gap-2">
-              <h1 class="text-sm font-semibold text-white font-mono" id="inspector-resource-id">aws_db_instance.production_db</h1>
-              <span class="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono" id="inspector-badge">Ready for Review</span>
+              <h1 class="text-sm font-bold font-mono" style="color: var(--text-high);" id="inspector-resource-id">aws_db_instance.production_db</h1>
+              <span class="text-xs px-2 py-0.5 rounded font-mono font-medium border" style="background-color: var(--gain-bg); border-color: var(--gain-border); color: var(--gain);" id="inspector-badge">Ready for Review</span>
             </div>
-            <p class="text-xs text-slate-400 mt-1" id="inspector-subtitle">PostgreSQL 15 OLTP instance running on AWS Oregon (us-west-2).</p>
+            <p class="text-xs mt-1" style="color: var(--text-low);" id="inspector-subtitle">PostgreSQL 15 OLTP instance running on AWS Oregon (us-west-2).</p>
           </div>
 
           <div class="flex items-center gap-2">
-            <button onclick="dispatchMergeAction()" id="btn-merge-action" class="px-3.5 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors flex items-center gap-1.5">
+            <button onclick="dispatchMergeAction()" id="btn-merge-action" class="px-3.5 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors flex items-center gap-1.5 shadow-sm">
               <span>Create Pull Request</span>
             </button>
           </div>
         </div>
 
         <!-- Inspector View Navigation Tabs -->
-        <div class="flex items-center gap-2 border-b border-slate-800 pb-2 text-xs font-medium">
-          <button onclick="setInspectorTab('evidence')" id="subtab-evidence" class="px-3 py-1 rounded bg-slate-800 text-white font-semibold">Swarm Consensus</button>
-          <button onclick="setInspectorTab('diff')" id="subtab-diff" class="px-3 py-1 rounded text-slate-400 hover:text-slate-200">Terraform HCL Diff</button>
-          <button onclick="setInspectorTab('policies')" id="subtab-policies" class="px-3 py-1 rounded text-slate-400 hover:text-slate-200">StateGuard Invariants (13)</button>
+        <div class="flex items-center gap-2 border-b pb-2 text-xs font-medium" style="border-color: var(--border-subtle);">
+          <button onclick="setInspectorTab('evidence')" id="subtab-evidence" class="px-3 py-1.5 rounded font-semibold transition-colors" style="background-color: var(--surface-elevated); color: var(--text-high); border: 1px solid var(--border-strong);">Swarm Consensus</button>
+          <button onclick="setInspectorTab('diff')" id="subtab-diff" class="px-3 py-1.5 rounded transition-colors" style="color: var(--text-mid);">Terraform HCL Diff</button>
+          <button onclick="setInspectorTab('policies')" id="subtab-policies" class="px-3 py-1.5 rounded transition-colors" style="color: var(--text-mid);">StateGuard Invariants (13)</button>
         </div>
 
         <!-- Panel 1: Swarm Consensus Debate Evidence -->
-        <div id="inspector-panel-evidence" class="space-y-3.5 text-xs">
+        <div id="inspector-panel-evidence" class="space-y-3 text-xs">
           
           <!-- FinOps Step -->
-          <div class="p-3.5 rounded bg-[#111726] border border-slate-800 space-y-1.5">
+          <div class="p-3.5 rounded border space-y-1.5" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
             <div class="flex items-center justify-between">
-              <span class="font-semibold text-slate-200 flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+              <span class="font-semibold flex items-center gap-1.5" style="color: var(--text-high);">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
                 FinOps Agent Specification
               </span>
-              <span class="font-mono text-emerald-400" id="evidence-finops-spec">db.r6g.xlarge ($296.00/mo)</span>
+              <span class="font-mono font-semibold" style="color: var(--gain);" id="evidence-finops-spec">db.r6g.xlarge ($296.00/mo)</span>
             </div>
-            <p class="text-slate-400 leading-relaxed" id="evidence-finops-reasoning">
+            <p class="leading-relaxed" style="color: var(--text-mid);" id="evidence-finops-reasoning">
               Identified 40% price-performance gain by shifting from legacy Intel x86 to AWS Graviton ARM. The candidate preserves 32 GB RAM (comfortably above the 23.1 GB safety floor) and guarantees 2,630 DB connections.
             </p>
           </div>
 
           <!-- Architecture Step -->
-          <div class="p-3.5 rounded bg-[#111726] border border-slate-800 space-y-1.5">
+          <div class="p-3.5 rounded border space-y-1.5" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
             <div class="flex items-center justify-between">
-              <span class="font-semibold text-slate-200 flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+              <span class="font-semibold flex items-center gap-1.5" style="color: var(--text-high);">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
                 Architecture & Reliability Verification
               </span>
-              <span class="font-mono text-emerald-400" id="evidence-arch-verdict">Passed (1.52x RAM Headroom)</span>
+              <span class="font-mono font-semibold" style="color: var(--gain);" id="evidence-arch-verdict">Passed (1.52x RAM Headroom)</span>
             </div>
-            <p class="text-slate-400 leading-relaxed" id="evidence-arch-reasoning">
+            <p class="leading-relaxed" style="color: var(--text-mid);" id="evidence-arch-reasoning">
               Analyzed 90-day CloudWatch P99 telemetry. Peak historical CPU is 42.5%, yielding a projected CPU of 70.8% on Graviton (safely below the 80% ceiling). Peak RAM used was 21.0 GB; proposed 32 GB offers 11 GB unallocated headroom. Zero OOM risk.
             </p>
           </div>
 
           <!-- Security Step -->
-          <div class="p-3.5 rounded bg-[#111726] border border-slate-800 space-y-1.5">
+          <div class="p-3.5 rounded border space-y-1.5" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
             <div class="flex items-center justify-between">
-              <span class="font-semibold text-slate-200 flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+              <span class="font-semibold flex items-center gap-1.5" style="color: var(--text-high);">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
                 Security & Compliance Audit
               </span>
-              <span class="font-mono text-emerald-400">Passed (Zero Regressions)</span>
+              <span class="font-mono font-semibold" style="color: var(--gain);">Passed (Zero Regressions)</span>
             </div>
-            <p class="text-slate-400 leading-relaxed" id="evidence-sec-reasoning">
-              Confirmed storage encryption attribute is retained (<code class="font-mono text-slate-300">storage_encrypted = true</code>), public access remains disabled (<code class="font-mono text-slate-300">publicly_accessible = false</code>), and mandatory billing tags are preserved.
+            <p class="leading-relaxed" style="color: var(--text-mid);" id="evidence-sec-reasoning">
+              Confirmed storage encryption attribute is retained (<code class="font-mono text-blue-600">storage_encrypted = true</code>), public access remains disabled (<code class="font-mono text-blue-600">publicly_accessible = false</code>), and mandatory billing tags are preserved.
             </p>
           </div>
 
           <!-- Cost Comparison Strip -->
-          <div class="p-3 rounded bg-slate-950 border border-slate-800 font-mono text-xs flex items-center justify-between">
-            <span class="text-slate-400">Current Spend: <strong class="text-slate-200" id="evidence-curr-spend">$1,400.00 / mo</strong></span>
-            <span class="text-slate-400">Optimized Spend: <strong class="text-slate-200" id="evidence-opt-spend">$296.00 / mo</strong></span>
-            <span class="text-emerald-400 font-bold" id="evidence-delta-spend">Net: -$1,104.00 / mo</span>
+          <div class="p-3 rounded border font-mono text-xs flex items-center justify-between" style="background-color: var(--surface-elevated); border-color: var(--border-subtle);">
+            <span style="color: var(--text-low);">Current: <strong style="color: var(--text-high);" id="evidence-curr-spend">$1,400.00 / mo</strong></span>
+            <span style="color: var(--text-low);">Optimized: <strong style="color: var(--text-high);" id="evidence-opt-spend">$296.00 / mo</strong></span>
+            <span class="font-bold" style="color: var(--gain);" id="evidence-delta-spend">Net: -$1,104.00 / mo</span>
           </div>
 
         </div>
 
         <!-- Panel 2: Terraform HCL Diff (Hidden by default) -->
         <div id="inspector-panel-diff" class="hidden space-y-3">
-          <div class="text-xs text-slate-400 font-mono flex items-center justify-between">
+          <div class="text-xs font-mono flex items-center justify-between" style="color: var(--text-low);">
             <span id="diff-file-target">File: terraform/rds.tf</span>
-            <span class="text-slate-500">AST Mutation via TerraformHCLParser</span>
+            <span>AST Mutation via TerraformHCLParser</span>
           </div>
-          <div class="bg-slate-950 p-4 rounded border border-slate-800 font-mono text-xs space-y-1 overflow-x-auto text-slate-300" id="diff-code-body">
-            <div class="text-slate-500">// main.tf diff with lexical brace-depth isolation</div>
+          <div class="p-4 rounded border font-mono text-xs space-y-1 overflow-x-auto text-slate-200" style="background-color: var(--code-bg); border-color: var(--border-subtle);" id="diff-code-body">
+            <div class="text-slate-500">// rds.tf diff with lexical brace-depth isolation</div>
             <div>&nbsp;resource "aws_db_instance" "production_db" {</div>
             <div>&nbsp; &nbsp;allocated_storage &nbsp; = 500</div>
             <div>&nbsp; &nbsp;engine &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; = "postgres"</div>
@@ -363,60 +411,60 @@
 
         <!-- Panel 3: StateGuard Invariants (13 Rules) -->
         <div id="inspector-panel-policies" class="hidden space-y-2 text-xs">
-          <div class="text-slate-400 text-xs mb-2">Deterministic validation rules evaluated prior to GitOps emission:</div>
+          <div class="text-xs mb-2" style="color: var(--text-low);">Deterministic validation rules evaluated prior to GitOps emission:</div>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-2 font-mono text-[11px]">
-            <div class="p-2 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
-              <span class="text-slate-300">Rule 1: CPU Headroom &le; 80%</span>
-              <span class="text-emerald-400">Passed (70.8%)</span>
+            <div class="p-2.5 rounded border flex items-center justify-between" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
+              <span style="color: var(--text-mid);">Rule 1: CPU Headroom &le; 80%</span>
+              <span style="color: var(--gain); font-weight: 600;">Passed (70.8%)</span>
             </div>
-            <div class="p-2 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
-              <span class="text-slate-300">Rule 2: RAM Buffer &ge; 1.25x</span>
-              <span class="text-emerald-400">Passed (1.52x)</span>
+            <div class="p-2.5 rounded border flex items-center justify-between" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
+              <span style="color: var(--text-mid);">Rule 2: RAM Buffer &ge; 1.25x</span>
+              <span style="color: var(--gain); font-weight: 600;">Passed (1.52x)</span>
             </div>
-            <div class="p-2 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
-              <span class="text-slate-300">Rule 3: Min Memory Floor 4GB</span>
-              <span class="text-emerald-400">Passed (32GB)</span>
+            <div class="p-2.5 rounded border flex items-center justify-between" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
+              <span style="color: var(--text-mid);">Rule 3: Min Memory Floor 4GB</span>
+              <span style="color: var(--gain); font-weight: 600;">Passed (32GB)</span>
             </div>
-            <div class="p-2 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
-              <span class="text-slate-300">Rule 4: DB Connection Cap</span>
-              <span class="text-emerald-400">Passed (124 &lt; 2630)</span>
+            <div class="p-2.5 rounded border flex items-center justify-between" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
+              <span style="color: var(--text-mid);">Rule 4: DB Connection Cap</span>
+              <span style="color: var(--gain); font-weight: 600;">Passed (124 &lt; 2630)</span>
             </div>
-            <div class="p-2 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
-              <span class="text-slate-300">Rule 5: Graviton Engine Lock</span>
-              <span class="text-emerald-400">Passed (Postgres OK)</span>
+            <div class="p-2.5 rounded border flex items-center justify-between" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
+              <span style="color: var(--text-mid);">Rule 5: Graviton Engine Lock</span>
+              <span style="color: var(--gain); font-weight: 600;">Passed (Postgres OK)</span>
             </div>
-            <div class="p-2 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
-              <span class="text-slate-300">Rule 6: EC2 x86 AMI Lock</span>
-              <span class="text-emerald-400">Passed (Multi-Arch)</span>
+            <div class="p-2.5 rounded border flex items-center justify-between" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
+              <span style="color: var(--text-mid);">Rule 6: EC2 x86 AMI Lock</span>
+              <span style="color: var(--gain); font-weight: 600;">Passed (Multi-Arch)</span>
             </div>
-            <div class="p-2 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
-              <span class="text-slate-300">Rule 7: Multi-AZ Multiplier</span>
-              <span class="text-emerald-400">Passed (Single AZ)</span>
+            <div class="p-2.5 rounded border flex items-center justify-between" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
+              <span style="color: var(--text-mid);">Rule 7: Multi-AZ Multiplier</span>
+              <span style="color: var(--gain); font-weight: 600;">Passed (Single AZ)</span>
             </div>
-            <div class="p-2 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
-              <span class="text-slate-300">Rule 8: Dedicated EBS IOPS Cap</span>
-              <span class="text-emerald-400">Passed (EBS 312MB/s)</span>
+            <div class="p-2.5 rounded border flex items-center justify-between" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
+              <span style="color: var(--text-mid);">Rule 8: Dedicated EBS IOPS Cap</span>
+              <span style="color: var(--gain); font-weight: 600;">Passed (EBS 312MB/s)</span>
             </div>
-            <div class="p-2 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
-              <span class="text-slate-300">Rule 9: Confused Deputy ExternalId</span>
-              <span class="text-emerald-400">Passed (Verified)</span>
+            <div class="p-2.5 rounded border flex items-center justify-between" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
+              <span style="color: var(--text-mid);">Rule 9: Confused Deputy ExternalId</span>
+              <span style="color: var(--gain); font-weight: 600;">Passed (Verified)</span>
             </div>
-            <div class="p-2 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
-              <span class="text-slate-300">Rule 10: Negative Savings Veto</span>
-              <span class="text-emerald-400">Passed (-$1104/mo)</span>
+            <div class="p-2.5 rounded border flex items-center justify-between" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
+              <span style="color: var(--text-mid);">Rule 10: Negative Savings Veto</span>
+              <span style="color: var(--gain); font-weight: 600;">Passed (-$1104/mo)</span>
             </div>
-            <div class="p-2 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
-              <span class="text-slate-300">Rule 11: Drift Z-Score &le; 3.5</span>
-              <span class="text-emerald-400">Passed (Z = 0.82)</span>
+            <div class="p-2.5 rounded border flex items-center justify-between" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
+              <span style="color: var(--text-mid);">Rule 11: Drift Z-Score &le; 3.5</span>
+              <span style="color: var(--gain); font-weight: 600;">Passed (Z = 0.82)</span>
             </div>
-            <div class="p-2 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
-              <span class="text-slate-300">Rule 12: Verified Catalog Spec</span>
-              <span class="text-emerald-400">Passed (Physical Spec)</span>
+            <div class="p-2.5 rounded border flex items-center justify-between" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
+              <span style="color: var(--text-mid);">Rule 12: Verified Catalog Spec</span>
+              <span style="color: var(--gain); font-weight: 600;">Passed (Physical Spec)</span>
             </div>
-            <div class="p-2 rounded bg-slate-900 border border-slate-800 flex items-center justify-between md:col-span-2">
-              <span class="text-slate-300">Rule 13: SAGA LIFO Rollback Handler</span>
-              <span class="text-emerald-400">Passed (Compensation Ready)</span>
+            <div class="p-2.5 rounded border flex items-center justify-between md:col-span-2" style="background-color: var(--surface-subtle); border-color: var(--border-subtle);">
+              <span style="color: var(--text-mid);">Rule 13: SAGA LIFO Rollback Handler</span>
+              <span style="color: var(--gain); font-weight: 600;">Passed (Compensation Ready)</span>
             </div>
           </div>
         </div>
@@ -428,42 +476,42 @@
   </main>
 
   <!-- AWS Credentials Modal -->
-  <div id="aws-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-    <div class="surface-panel max-w-lg w-full p-5 space-y-4 border-slate-700 bg-[#151C2C]">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+  <div id="aws-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div class="enterprise-panel max-w-lg w-full p-5 space-y-4" style="background-color: var(--surface);">
+      <div class="flex items-center justify-between border-b pb-3" style="border-color: var(--border-subtle);">
         <div>
-          <h3 class="text-sm font-semibold text-white">AWS Cross-Account Access Configuration</h3>
-          <p class="text-xs text-slate-400 mt-0.5">Enforces ExternalId verification to prevent Confused Deputy attacks.</p>
+          <h3 class="text-sm font-bold" style="color: var(--text-high);">AWS Cross-Account IAM Access</h3>
+          <p class="text-xs mt-0.5" style="color: var(--text-low);">Cryptographic ExternalId defense against Confused Deputy attacks.</p>
         </div>
-        <button onclick="closeModal('aws-modal')" class="text-slate-400 hover:text-white text-lg">&times;</button>
+        <button onclick="closeModal('aws-modal')" class="text-lg" style="color: var(--text-low);">&times;</button>
       </div>
 
       <div class="space-y-3 text-xs">
         <div>
-          <label class="block text-slate-300 font-medium mb-1">Your ExternalId (Cryptographic Secret)</label>
+          <label class="block font-medium mb-1" style="color: var(--text-mid);">Your Tenant ExternalId (Secret)</label>
           <div class="flex items-center gap-2">
-            <input type="text" readonly value="cg_ext_4f9a8b1c2e3d7a8b9c0d1e2f3a4b5c6d" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-blue-300 font-mono text-xs">
+            <input type="text" readonly value="cg_ext_4f9a8b1c2e3d7a8b9c0d1e2f3a4b5c6d" class="w-full border rounded px-3 py-1.5 font-mono text-xs" style="background-color: var(--surface-elevated); border-color: var(--border-subtle); color: var(--text-high);">
             <button onclick="copyToClipboard('cg_ext_4f9a8b1c2e3d7a8b9c0d1e2f3a4b5c6d')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded text-white font-medium">Copy</button>
           </div>
-          <p class="text-[11px] text-slate-500 mt-1">Include this token in the <code class="text-slate-400 font-mono">sts:ExternalId</code> condition of your IAM Role trust policy.</p>
+          <p class="text-[11px] mt-1" style="color: var(--text-low);">Include this token in the <code class="font-mono">sts:ExternalId</code> condition of your IAM Role trust policy.</p>
         </div>
 
         <div>
-          <label class="block text-slate-300 font-medium mb-1">Target IAM Role ARN</label>
-          <input type="text" placeholder="arn:aws:iam::123456789012:role/CloudGuardReadOnlyRole" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-white font-mono text-xs focus:outline-none focus:border-blue-500">
+          <label class="block font-medium mb-1" style="color: var(--text-mid);">Target IAM Role ARN</label>
+          <input type="text" placeholder="arn:aws:iam::123456789012:role/CloudGuardReadOnlyRole" class="w-full border rounded px-3 py-1.5 font-mono text-xs focus:outline-none focus:border-blue-600" style="background-color: var(--surface-elevated); border-color: var(--border-subtle); color: var(--text-high);">
         </div>
       </div>
 
-      <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
-        <button onclick="closeModal('aws-modal')" class="px-3 py-1.5 rounded border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs text-slate-300">Close</button>
-        <button onclick="saveAWSAccount()" class="px-3.5 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs">Save & Verify Connection</button>
+      <div class="flex items-center justify-end gap-2 pt-3 border-t" style="border-color: var(--border-subtle);">
+        <button onclick="closeModal('aws-modal')" class="px-3 py-1.5 rounded border text-xs" style="background-color: var(--surface-elevated); border-color: var(--border-subtle); color: var(--text-mid);">Close</button>
+        <button onclick="saveAWSAccount()" class="px-3.5 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs">Save & Validate</button>
       </div>
     </div>
   </div>
 
   <!-- Notification Toast -->
-  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden px-4 py-2.5 rounded border border-slate-700 bg-slate-900 text-slate-100 text-xs font-mono shadow-2xl flex items-center gap-2 transition-all">
-    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden px-4 py-2.5 rounded border text-xs font-mono shadow-xl flex items-center gap-2 transition-all" style="background-color: var(--surface); border-color: var(--border-strong); color: var(--text-high);">
+    <span class="w-2 h-2 rounded-full" style="background-color: var(--gain);"></span>
     <span id="toast-message">Notification</span>
   </div>
 
@@ -474,6 +522,34 @@
     let savingsMonthly = 2041.67;
     let savingsAnnual = 24500.00;
     let openProposals = 3;
+
+    // Theme Management: Corporate Console (Default) vs Neutral Charcoal Dark
+    function initTheme() {
+      const savedTheme = localStorage.getItem('cloudguard-theme') || 'light';
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('theme-dark');
+        updateThemeButton(true);
+      } else {
+        document.documentElement.classList.remove('theme-dark');
+        updateThemeButton(false);
+      }
+    }
+
+    function toggleEnterpriseTheme() {
+      const isDark = document.documentElement.classList.toggle('theme-dark');
+      localStorage.setItem('cloudguard-theme', isDark ? 'dark' : 'light');
+      updateThemeButton(isDark);
+      showToast(isDark ? 'Switched to Enterprise Charcoal Dark' : 'Switched to Enterprise Corporate Console');
+    }
+
+    function updateThemeButton(isDark) {
+      const icon = document.getElementById('theme-toggle-icon');
+      const label = document.getElementById('theme-toggle-label');
+      if (icon && label) {
+        icon.innerText = isDark ? '☀️' : '🌙';
+        label.innerText = isDark ? 'Console' : 'Charcoal';
+      }
+    }
 
     const candidateData = {
       production_db: {
@@ -558,12 +634,10 @@
       const data = candidateData[key];
       if (!data) return;
 
-      // Update card visual selection
       document.querySelectorAll('.candidate-card').forEach(el => el.classList.remove('active-candidate'));
       const activeCard = document.getElementById(`card-${key}`);
       if (activeCard) activeCard.classList.add('active-candidate');
 
-      // Populate inspector
       document.getElementById('inspector-resource-id').innerText = data.id;
       document.getElementById('inspector-subtitle').innerText = data.subtitle;
       document.getElementById('evidence-finops-spec').innerText = data.finopsSpec;
@@ -583,12 +657,22 @@
       ['evidence', 'diff', 'policies'].forEach(t => {
         document.getElementById(`inspector-panel-${t}`).classList.add('hidden');
         const btn = document.getElementById(`subtab-${t}`);
-        if (btn) btn.className = "px-3 py-1 rounded text-slate-400 hover:text-slate-200";
+        if (btn) {
+          btn.style.backgroundColor = 'transparent';
+          btn.style.color = 'var(--text-mid)';
+          btn.style.border = '1px solid transparent';
+          btn.classList.remove('font-semibold');
+        }
       });
 
       document.getElementById(`inspector-panel-${tab}`).classList.remove('hidden');
       const activeBtn = document.getElementById(`subtab-${tab}`);
-      if (activeBtn) activeBtn.className = "px-3 py-1 rounded bg-slate-800 text-white font-semibold";
+      if (activeBtn) {
+        activeBtn.style.backgroundColor = 'var(--surface-elevated)';
+        activeBtn.style.color = 'var(--text-high)';
+        activeBtn.style.border = '1px solid var(--border-strong)';
+        activeBtn.classList.add('font-semibold');
+      }
     }
 
     function dispatchMergeAction() {
@@ -597,24 +681,32 @@
 
       const card = document.getElementById(`card-${currentCandidateKey}`);
       if (card) {
-        card.style.opacity = '0.4';
+        card.style.opacity = '0.5';
         card.onclick = null;
-        card.querySelector('.font-bold').innerText = 'Merged (Active)';
-        card.querySelector('.font-bold').className = 'font-mono text-xs font-bold text-slate-400';
+        const savingsEl = card.querySelector('.font-bold');
+        if (savingsEl) {
+          savingsEl.innerText = 'Merged (Active)';
+          savingsEl.style.color = 'var(--text-low)';
+        }
       }
 
       openProposals = Math.max(0, openProposals - 1);
       document.getElementById('stat-open-prs').innerText = `${openProposals} Proposals`;
 
-      document.getElementById('inspector-badge').innerText = 'GitOps Merged';
-      document.getElementById('inspector-badge').className = 'text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono';
+      const badge = document.getElementById('inspector-badge');
+      badge.innerText = 'GitOps Merged';
+      badge.style.backgroundColor = 'var(--surface-subtle)';
+      badge.style.color = 'var(--text-mid)';
+      badge.style.borderColor = 'var(--border-subtle)';
 
       const btn = document.getElementById('btn-merge-action');
       btn.disabled = true;
       btn.innerText = 'Merged to Main';
-      btn.className = 'px-3.5 py-1.5 rounded bg-slate-800 text-slate-500 font-medium text-xs cursor-not-allowed';
+      btn.className = 'px-3.5 py-1.5 rounded font-medium text-xs cursor-not-allowed';
+      btn.style.backgroundColor = 'var(--surface-elevated)';
+      btn.style.color = 'var(--text-low)';
 
-      showToast(`Merged ${data.id}. StateGuard lineage recorded. Monthly yield: ${data.deltaSpend}.`);
+      showToast(`Merged ${data.id}. StateGuard audit lineage logged.`);
     }
 
     function filterQueue(service) {
@@ -630,9 +722,13 @@
         const btn = document.getElementById(`btn-filter-${s}`);
         if (btn) {
           if (s === service) {
-            btn.className = "px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-medium";
+            btn.style.backgroundColor = 'var(--surface-elevated)';
+            btn.style.borderColor = 'var(--border-strong)';
+            btn.style.color = 'var(--text-high)';
           } else {
-            btn.className = "px-2 py-0.5 rounded text-slate-400 hover:text-slate-200 font-medium";
+            btn.style.backgroundColor = 'transparent';
+            btn.style.borderColor = 'transparent';
+            btn.style.color = 'var(--text-mid)';
           }
         }
       });
@@ -703,6 +799,9 @@
         btn.classList.remove('opacity-50');
       }, 1800);
     }
+
+    // Initialize on page load
+    initTheme();
   </script>
 </body>
 </html>
