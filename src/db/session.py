@@ -5,6 +5,12 @@ Provides engine creation, sessionmakers (async and sync), and table initializati
 import os
 from typing import AsyncGenerator, Generator
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import Session, sessionmaker

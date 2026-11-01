@@ -3,6 +3,13 @@ Celery Distributed Task Queue & Beat Scheduler Configuration for CloudGuard FinO
 Provides asynchronous job dispatching, result backends, and scheduled nightly scans.
 """
 import os
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 from celery import Celery
 from celery.schedules import crontab
 

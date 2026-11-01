@@ -2,6 +2,12 @@ import os
 import sys
 from logging.config import fileConfig
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 from sqlalchemy import engine_from_config, pool
 from alembic import context
 
