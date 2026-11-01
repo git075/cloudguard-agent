@@ -13,27 +13,28 @@ from src.agents.swarm_orchestrator import SwarmOrchestrator
 from src.governance.engine import CloudGuardGovernanceEngine
 from src.services.gitops import GitOpsEngine
 
+from contextlib import asynccontextmanager
+from src.db.session import init_db
+
 logger = logging.getLogger("cloudguard.dashboard_api")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Ensure database schema is created on application launch."""
+    await init_db()
+    yield
+
 
 app = FastAPI(
     title="CloudGuard FinOps API",
     description="Autonomous Multi-Agent GitOps Cloud Cost Optimization Engine powered by StateGuard",
-    version="0.1.0"
+    version="0.1.0",
+    lifespan=lifespan,
 )
 
-# Shared In-Memory Log Store for Demo API
-PR_STORE: List[Dict[str, Any]] = [
-    {
-        "pr_id": "pr_101",
-        "github_pr_url": "https://github.com/acme/infrastructure/pull/42",
-        "resource_id": "aws_db_instance.main_db",
-        "old_instance_type": "db.r5.2xlarge",
-        "new_instance_type": "db.r6g.xlarge",
-        "monthly_savings_usd": 950.00,
-        "status": "open",
-        "stateguard_status": "passed_all_invariants"
-    }
-]
+# In-Memory Log Store for Proposals (Starts clean with 0 seeded records)
+PR_STORE: List[Dict[str, Any]] = []
 
 
 from pathlib import Path
@@ -93,7 +94,7 @@ def get_savings_metrics() -> Dict[str, Any]:
     """
     Returns total annualized savings and active PR metrics for dashboard header widgets.
     """
-    total_monthly = sum(item["monthly_savings_usd"] for item in PR_STORE if item["status"] == "open")
+    total_monthly = sum(item.get("monthly_savings_usd", 0.0) for item in PR_STORE if item.get("status") == "open") if PR_STORE else 0.0
     return {
         "active_prs_count": len(PR_STORE),
         "monthly_savings_usd": total_monthly,

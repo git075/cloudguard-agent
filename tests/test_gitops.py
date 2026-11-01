@@ -91,21 +91,42 @@ class TestPhase4GitOpsAndDashboard(unittest.TestCase):
     def test_dashboard_api_savings_metrics(self):
         if not HAS_FASTAPI:
             self.skipTest("FastAPI not installed in system Python environment.")
+        from src.ui.dashboard_api import PR_STORE
+        PR_STORE.clear()
+        PR_STORE.append({
+            "pr_id": "pr_101",
+            "monthly_savings_usd": 950.00,
+            "status": "open",
+        })
         response = self.client.get("/api/v1/metrics/savings")
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data["monthly_savings_usd"], 950.00)
         self.assertEqual(data["annualized_savings_usd"], 11400.00)
         self.assertEqual(data["stateguard_protection_rate_percent"], 100.0)
+        PR_STORE.clear()
 
     def test_dashboard_api_list_prs(self):
         if not HAS_FASTAPI:
             self.skipTest("FastAPI not installed in system Python environment.")
+        from src.ui.dashboard_api import PR_STORE
+        PR_STORE.clear()
+        PR_STORE.append({
+            "pr_id": "pr_101",
+            "github_pr_url": "https://github.com/acme/infrastructure/pull/42",
+            "resource_id": "aws_db_instance.main_db",
+            "old_instance_type": "db.r5.2xlarge",
+            "new_instance_type": "db.r6g.xlarge",
+            "monthly_savings_usd": 950.00,
+            "status": "open",
+            "stateguard_status": "passed_all_invariants"
+        })
         response = self.client.get("/api/v1/pull-requests")
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data["total"], 1)
         self.assertEqual(data["pull_requests"][0]["pr_id"], "pr_101")
+        PR_STORE.clear()
 
     def test_dashboard_ui_html_serving(self):
         if not HAS_FASTAPI:

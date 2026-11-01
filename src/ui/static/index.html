@@ -121,9 +121,9 @@
 
         <div class="hidden sm:flex items-center gap-2 text-xs text-slate-400">
           <span>Tenant:</span>
-          <span id="header-tenant-name" class="text-slate-200 font-semibold">Demo Sandbox</span>
+          <span id="header-tenant-name" class="text-slate-200 font-semibold">No Active Tenant</span>
           <span class="text-slate-600">/</span>
-          <span id="header-account-name" class="text-slate-300 font-mono">123456789012 (us-east-1)</span>
+          <span id="header-account-name" class="text-slate-400 font-mono">Not Connected</span>
         </div>
       </div>
 
@@ -493,7 +493,7 @@
         <div>
           <label class="block font-medium mb-1" style="color: var(--text-mid);">Your Tenant ExternalId (Secret)</label>
           <div class="flex items-center gap-2">
-            <input id="modal-external-id" type="text" readonly value="cg_ext_4f9a8b1c2e3d7a8b9c0d1e2f3a4b5c6d" class="w-full border rounded px-3 py-1.5 font-mono text-xs" style="background-color: var(--surface-elevated); border-color: var(--border-subtle); color: var(--text-high);">
+            <input id="modal-external-id" type="text" readonly value="" placeholder="Sign in to generate unique tenant ExternalId" class="w-full border rounded px-3 py-1.5 font-mono text-xs" style="background-color: var(--surface-elevated); border-color: var(--border-subtle); color: var(--text-high);">
             <button onclick="copyExtId()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded text-white font-medium">Copy</button>
           </div>
           <p class="text-[11px] mt-1" style="color: var(--text-low);">Include this token in the <code class="font-mono">sts:ExternalId</code> condition of your IAM Role trust policy.</p>
